@@ -1,0 +1,12 @@
+# Exploration captures contain session tokens and personal data — never commit
+docs/explorations/captures/
+captures/
+explorations/
+
+.venv/
+__pycache__/
+*.pyc
+.mypy_cache/
+.pytest_cache/
+.idea/
+.opencode/
