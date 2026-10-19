@@ -9,7 +9,6 @@ from collections.abc import Callable
 import httpx
 
 from zero_api.account.api import AccountApi
-from zero_api.auth.browser_login import browser_login
 from zero_api.auth.models import AuthSession
 from zero_api.core.http import AppHttp
 from zero_api.ordering.api import OrderingApi
@@ -21,7 +20,8 @@ class ZeroClient:
     """Client for Finanzen.net ZERO.
 
     Instantiating with email + password is enough: the first API call triggers
-    the login, and every rejected session is re-established automatically.
+    the HTTP login (Cognito SRP via the app's own proxy, no browser), and every
+    rejected session is re-established automatically.
     """
 
     def __init__(
@@ -32,7 +32,7 @@ class ZeroClient:
         login: Callable[[], AuthSession] | None = None,
         http: httpx.Client | None = None,
     ) -> None:
-        self._http = AppHttp(http=http, relogin=login or (lambda: browser_login(email, password)))
+        self._http = AppHttp(http=http, relogin=login, email=email, password=password)
         self.account = AccountApi(self._http)
         self.portfolio = PortfolioApi(self._http)
         self.watchlist = WatchlistApi(self._http)

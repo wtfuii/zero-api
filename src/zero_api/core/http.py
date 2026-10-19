@@ -12,6 +12,7 @@ from time import time
 
 import httpx
 
+from zero_api.auth.api import http_login
 from zero_api.auth.models import AuthSession
 from zero_api.core.exceptions import AuthenticationError, BrokerApiError
 
@@ -36,9 +37,13 @@ class AppHttp:
         self,
         http: httpx.Client | None = None,
         relogin: Callable[[], AuthSession] | None = None,
+        email: str | None = None,
+        password: str | None = None,
     ) -> None:
         self._http = http or httpx.Client(base_url=BASE_URL, headers=_static_headers())
         self._relogin = relogin
+        # credentials used only when no explicit relogin callable is given
+        self._credentials = (email, password) if email is not None and password is not None else None
         self._session: AuthSession | None = None
         self._fz_build: str | None = None
 
@@ -102,9 +107,15 @@ class AppHttp:
             )
 
     def _login(self) -> None:
-        if self._relogin is None:
+        if self._relogin is not None:
+            session = self._relogin()
+        elif self._credentials is not None:
+            # http-first login (SRP via /apic/authc) on this same session —
+            # the browser fallback was retired once SRP existed (waf_probe.md).
+            session = http_login(self._http, *self._credentials)
+        else:
             raise AuthenticationError("not authenticated and no login method configured")
-        self.apply_session(self._relogin())
+        self.apply_session(session)
 
     def _auth_headers(self) -> dict[str, str]:
         headers = {"x-xsrf-token": self._http.cookies.get("XSRF-TOKEN", "") or ""}
