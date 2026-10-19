@@ -1,0 +1,9 @@
+{
+  "type": "apiError",
+  "status": "NOT_ACCEPTABLE",
+  "message": "Billigst Orders werden nicht au\u00dferhalb der Handelszeiten akzeptiert.",
+  "errors": [
+    "no further detail"
+  ],
+  "errorCode": "ORDER_TYPE_NOT_ALLOWED_CHEAP_ORDER_OUTSIDE_SESSION_WINDOW"
+}

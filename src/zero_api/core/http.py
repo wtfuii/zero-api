@@ -13,7 +13,7 @@ from time import time
 import httpx
 
 from zero_api.auth.models import AuthSession
-from zero_api.core.exceptions import AuthenticationError
+from zero_api.core.exceptions import AuthenticationError, BrokerApiError
 
 BASE_URL = "https://mein.finanzen-zero.net"
 
@@ -59,17 +59,17 @@ class AppHttp:
     def get_json(self, path: str, params: dict[str, str] | None = None) -> Any:
         response = self._request("GET", path, params)
         response.raise_for_status()
-        return response.json()
+        return _json_or_none(response)
 
     def post_json(self, path: str, params: dict[str, str] | None = None, json: Any = None) -> Any:
         response = self._request("POST", path, params, json)
         response.raise_for_status()
-        return response.json()
+        return _json_or_none(response)
 
     def delete_json(self, path: str, params: dict[str, str] | None = None) -> Any:
         response = self._request("DELETE", path, params)
         response.raise_for_status()
-        return response.json()
+        return _json_or_none(response)
 
     def _request(
         self, method: str, path: str, params: dict[str, str] | None, json: Any = None
@@ -81,7 +81,25 @@ class AppHttp:
             # session rejected/expired → re-authenticate once, then retry
             self._login()
             response = self._http.request(method, path, params=params, json=json, headers=self._auth_headers())
+        if response.is_error:
+            self._raise_api_error(response)
         return response
+
+    @staticmethod
+    def _raise_api_error(response: httpx.Response) -> None:
+        """Non-2xx with the broker's apiError body ({type:"apiError", ...}) →
+        BrokerApiError; any other error shape falls through to raise_for_status."""
+        try:
+            body = response.json()
+        except ValueError:
+            return
+        if isinstance(body, dict) and body.get("type") == "apiError":
+            raise BrokerApiError(
+                status=response.status_code,
+                message=body.get("message", ""),
+                error_code=body.get("errorCode"),
+                errors=body.get("errors") or [],
+            )
 
     def _login(self) -> None:
         if self._relogin is None:
@@ -112,6 +130,12 @@ class AppHttp:
             except (httpx.HTTPError, ValueError):
                 pass
         return self._fz_build
+
+
+def _json_or_none(response: httpx.Response) -> Any:
+    """Parse the body, or None when empty — e.g. /api/trading/order/verify
+    answers 200 with an empty body (docs/explorations/order.md)."""
+    return response.json() if response.content else None
 
 
 def _static_headers() -> dict[str, str]:
