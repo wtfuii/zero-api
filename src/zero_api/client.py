@@ -13,6 +13,7 @@ from zero_api.auth.browser_login import browser_login
 from zero_api.auth.models import AuthSession
 from zero_api.core.http import AppHttp
 from zero_api.ordering.api import OrderingApi
+from zero_api.portfolio.api import PortfolioApi
 from zero_api.watchlist.api import WatchlistApi
 
 
@@ -33,5 +34,6 @@ class ZeroClient:
     ) -> None:
         self._http = AppHttp(http=http, relogin=login or (lambda: browser_login(email, password)))
         self.account = AccountApi(self._http)
+        self.portfolio = PortfolioApi(self._http)
         self.watchlist = WatchlistApi(self._http)
         self.orders = OrderingApi(self._http)
