@@ -61,14 +61,26 @@ class AppHttp:
         response.raise_for_status()
         return response.json()
 
-    def _request(self, method: str, path: str, params: dict[str, str] | None) -> httpx.Response:
+    def post_json(self, path: str, params: dict[str, str] | None = None, json: Any = None) -> Any:
+        response = self._request("POST", path, params, json)
+        response.raise_for_status()
+        return response.json()
+
+    def delete_json(self, path: str, params: dict[str, str] | None = None) -> Any:
+        response = self._request("DELETE", path, params)
+        response.raise_for_status()
+        return response.json()
+
+    def _request(
+        self, method: str, path: str, params: dict[str, str] | None, json: Any = None
+    ) -> httpx.Response:
         if self._session is None:
             self._login()
-        response = self._http.request(method, path, params=params, headers=self._auth_headers())
+        response = self._http.request(method, path, params=params, json=json, headers=self._auth_headers())
         if response.status_code in (401, 403) and self._relogin is not None:
             # session rejected/expired → re-authenticate once, then retry
             self._login()
-            response = self._http.request(method, path, params=params, headers=self._auth_headers())
+            response = self._http.request(method, path, params=params, json=json, headers=self._auth_headers())
         return response
 
     def _login(self) -> None:

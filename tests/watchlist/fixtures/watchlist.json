@@ -1,0 +1,172 @@
+[
+ {
+  "instrument": {
+   "historicQuotes": [
+    {
+     "id": 1309555413,
+     "bid": 13.293,
+     "ask": 13.482,
+     "ts": "2026-10-15T20:59:56.078Z",
+     "isin": "CH0445689208"
+    }
+   ],
+   "sparplan": true,
+   "knockedOutFlag": false,
+   "endfaellig": false,
+   "longName": "21Shares Crypto Basket Index ETP/ETC",
+   "isin": "CH0445689208",
+   "type": "ETF",
+   "shortName": null
+  },
+  "watchlistItem": {
+   "id": 14445047,
+   "wlOrder": 1,
+   "isin": "CH0445689208",
+   "added": "2025-10-17T11:00:37.252Z",
+   "askWhenAdded": 18.152,
+   "bidWhenAdded": 18.121,
+   "ask": 13.318,
+   "bid": 13.131,
+   "quoteTime": "2026-10-16T20:59:56.069Z",
+   "itemName": "21Shares Crypto Basket Index ETP/ETC",
+   "note": ""
+  },
+  "instrumentAlternative": null
+ },
+ {
+  "instrument": {
+   "historicQuotes": [
+    {
+     "id": 1310843741,
+     "bid": 5.573,
+     "ask": 5.608,
+     "ts": "2026-10-15T20:59:09.071Z",
+     "isin": "FR0014010HV4"
+    }
+   ],
+   "sparplan": true,
+   "knockedOutFlag": false,
+   "endfaellig": false,
+   "longName": "Amundi MSCI World (2x) Leveraged UCITS ETF - USD ACC",
+   "isin": "FR0014010HV4",
+   "type": "ETF",
+   "shortName": null
+  },
+  "watchlistItem": {
+   "id": 14288002,
+   "wlOrder": 2,
+   "isin": "FR0014010HV4",
+   "added": "2025-10-10T09:32:54.167Z",
+   "askWhenAdded": 4.387,
+   "bidWhenAdded": 4.3785,
+   "ask": 5.506,
+   "bid": 5.472,
+   "quoteTime": "2026-10-16T20:59:02.432Z",
+   "itemName": "Amundi MSCI World (2x) Leveraged UCITS ETF - USD ACC",
+   "note": ""
+  },
+  "instrumentAlternative": null
+ },
+ {
+  "instrument": {
+   "historicQuotes": [
+    {
+     "id": 1309677356,
+     "bid": 52.97,
+     "ask": 53.14,
+     "ts": "2026-10-15T20:59:00.219Z",
+     "isin": "DE0006231004"
+    }
+   ],
+   "sparplan": true,
+   "knockedOutFlag": false,
+   "endfaellig": false,
+   "longName": "Infineon AG",
+   "isin": "DE0006231004",
+   "type": "AKTIE",
+   "shortName": "Infineon"
+  },
+  "watchlistItem": {
+   "id": 8500717,
+   "wlOrder": 3,
+   "isin": "DE0006231004",
+   "added": "2024-11-20T00:27:08.311Z",
+   "askWhenAdded": 29.175,
+   "bidWhenAdded": 29.03,
+   "ask": 51.95,
+   "bid": 51.54,
+   "quoteTime": "2026-10-16T20:00:01.029Z",
+   "itemName": "INFINEON TECH.AG NA O.N.",
+   "note": ""
+  },
+  "instrumentAlternative": null
+ },
+ {
+  "instrument": {
+   "historicQuotes": [
+    {
+     "id": 1309718318,
+     "bid": 33.72,
+     "ask": 33.99,
+     "ts": "2026-10-15T20:59:43.705Z",
+     "isin": "FR0010755611"
+    }
+   ],
+   "sparplan": true,
+   "knockedOutFlag": false,
+   "endfaellig": false,
+   "longName": "Amundi MSCI USA Daily (2x) Leveraged UCITS ETF Acc",
+   "isin": "FR0010755611",
+   "type": "ETF",
+   "shortName": null
+  },
+  "watchlistItem": {
+   "id": 7989491,
+   "wlOrder": 4,
+   "isin": "FR0010755611",
+   "added": "2024-10-16T15:15:32.281Z",
+   "askWhenAdded": 22.155,
+   "bidWhenAdded": 22.13,
+   "ask": 33.095,
+   "bid": 32.83,
+   "quoteTime": "2026-10-16T20:58:54.457Z",
+   "itemName": "Amundi ETF Leveraged MSCI USA Daily UCITS ETF - EUR",
+   "note": ""
+  },
+  "instrumentAlternative": null
+ },
+ {
+  "instrument": {
+   "historicQuotes": [
+    {
+     "id": 1310364405,
+     "bid": 209.95,
+     "ask": 210.3,
+     "ts": "2026-10-15T20:59:21.147Z",
+     "isin": "US60770K1079"
+    }
+   ],
+   "sparplan": true,
+   "knockedOutFlag": false,
+   "endfaellig": false,
+   "longName": "Moderna Inc",
+   "isin": "US60770K1079",
+   "type": "AKTIE",
+   "shortName": "Moderna"
+  },
+  "watchlistItem": {
+   "id": 7913064,
+   "wlOrder": 5,
+   "isin": "US60770K1079",
+   "added": "2024-10-10T19:38:23.935Z",
+   "askWhenAdded": 51.98,
+   "bidWhenAdded": 51.9,
+   "ask": 193.02,
+   "bid": 192.7,
+   "quoteTime": "2026-10-16T20:59:31.523Z",
+   "itemName": "MODERNA INC. DL-,0001",
+   "note": ""
+  },
+  "instrumentAlternative": null
+ }
+]

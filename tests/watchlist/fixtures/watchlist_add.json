@@ -1,0 +1,34 @@
+{
+ "instrument": {
+  "historicQuotes": [
+   {
+    "id": 1310778806,
+    "bid": 1031.0,
+    "ask": 1035.0,
+    "ts": "2026-10-15T20:42:34.308Z",
+    "isin": "DE0007030009"
+   }
+  ],
+  "sparplan": true,
+  "knockedOutFlag": false,
+  "endfaellig": false,
+  "longName": "Rheinmetall AG",
+  "isin": "DE0007030009",
+  "type": "AKTIE",
+  "shortName": "Rheinmetall"
+ },
+ "watchlistItem": {
+  "id": 20522998,
+  "wlOrder": 0,
+  "isin": "DE0007030009",
+  "added": "2026-10-19T04:22:16.476555750Z",
+  "askWhenAdded": 1090.8,
+  "bidWhenAdded": 1089.0,
+  "ask": 1090.8,
+  "bid": 1089.0,
+  "quoteTime": "2026-10-16T20:00:01.152Z",
+  "itemName": "RHEINMETALL AG",
+  "note": ""
+ },
+ "instrumentAlternative": null
+}
