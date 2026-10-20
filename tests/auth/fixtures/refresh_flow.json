@@ -1,0 +1,10 @@
+{
+  "comment": "Shape of the recorded REFRESH_TOKEN_AUTH exchange (raw.har, sanitized): InitiateAuth with the refresh token, response has NO RefreshToken (no rotation) \u2014 only AccessToken/IdToken.",
+  "result": {
+    "AuthenticationResult": {
+      "AccessToken": "fake-new-access-token",
+      "ExpiresIn": 3600,
+      "IdToken": "eyJhbGciOiAiUlMyNTYifQ.eyJwcm0iOiAie1wiNDkxNzk3NVwiOiB7XCJhY2NcIjogXCI0OTE3OTc1MDA3XCIsIFwib3duZXJcIjogdHJ1ZX19IiwgImF1ZCI6ICJ6ZXJvIn0.newsig"
+    }
+  }
+}

@@ -9,6 +9,12 @@ class AuthenticationError(ZeroApiError):
     """Login failed or the session could not be (re-)established."""
 
 
+class TwoFactorError(ZeroApiError):
+    """Order-execution 2FA (session TAN / app push) could not be completed,
+    e.g. the push was declined/unknown state, timed out, or no single enrolled
+    device could be picked (see docs/explorations/order_2fa.md)."""
+
+
 class BrokerApiError(ZeroApiError):
     """Broker answered non-2xx with its apiError body ({type:"apiError", ...},
     see docs/explorations/order.md) — e.g. a rejected order."""

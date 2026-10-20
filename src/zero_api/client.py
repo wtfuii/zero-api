@@ -13,6 +13,8 @@ from zero_api.auth.models import AuthSession
 from zero_api.core.http import AppHttp
 from zero_api.ordering.api import OrderingApi
 from zero_api.portfolio.api import PortfolioApi
+from zero_api.sessiontan.api import SessionTanApi
+from zero_api.sessiontan.models import EnrolledDevice
 from zero_api.watchlist.api import WatchlistApi
 
 
@@ -31,9 +33,11 @@ class ZeroClient:
         *,
         login: Callable[[], AuthSession] | None = None,
         http: httpx.Client | None = None,
+        default_device: str | EnrolledDevice | None = None,
     ) -> None:
         self._http = AppHttp(http=http, relogin=login, email=email, password=password)
         self.account = AccountApi(self._http)
         self.portfolio = PortfolioApi(self._http)
         self.watchlist = WatchlistApi(self._http)
-        self.orders = OrderingApi(self._http)
+        self.sessiontan = SessionTanApi(self._http, default_device=default_device)
+        self.orders = OrderingApi(self._http, sessiontan=self.sessiontan)

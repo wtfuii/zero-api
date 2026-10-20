@@ -66,10 +66,22 @@ class AppHttp:
         response.raise_for_status()
         return _json_or_none(response)
 
+    def get_text(self, path: str, params: dict[str, str] | None = None) -> str:
+        """GET whose body is a plain-text literal (e.g. sessiontan probes, order_2fa.md)."""
+        response = self._request("GET", path, params)
+        response.raise_for_status()
+        return response.text
+
     def post_json(self, path: str, params: dict[str, str] | None = None, json: Any = None) -> Any:
         response = self._request("POST", path, params, json)
         response.raise_for_status()
         return _json_or_none(response)
+
+    def post_text(self, path: str, params: dict[str, str] | None = None, content: str = "") -> str:
+        """POST with a text/plain body and a plain-text response (order_2fa.md)."""
+        response = self._request("POST", path, params, content=content, text_body=True)
+        response.raise_for_status()
+        return response.text
 
     def delete_json(self, path: str, params: dict[str, str] | None = None) -> Any:
         response = self._request("DELETE", path, params)
@@ -77,14 +89,26 @@ class AppHttp:
         return _json_or_none(response)
 
     def _request(
-        self, method: str, path: str, params: dict[str, str] | None, json: Any = None
+        self,
+        method: str,
+        path: str,
+        params: dict[str, str] | None,
+        json: Any = None,
+        content: str | None = None,
+        text_body: bool = False,
     ) -> httpx.Response:
         self._ensure_session()
-        response = self._http.request(method, path, params=params, json=json, headers=self._auth_headers())
+        response = self._http.request(
+            method, path, params=params, json=json, content=content,
+            headers={**self._auth_headers(), **({"content-type": "text/plain"} if text_body else {})},
+        )
         if response.status_code in (401, 403) and self._can_reauth():
             # session rejected/expired → re-authenticate once, then retry
             self._ensure_session(force=True)
-            response = self._http.request(method, path, params=params, json=json, headers=self._auth_headers())
+            response = self._http.request(
+                method, path, params=params, json=json, content=content,
+                headers={**self._auth_headers(), **({"content-type": "text/plain"} if text_body else {})},
+            )
         if response.is_error:
             self._raise_api_error(response)
         return response

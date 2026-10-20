@@ -75,10 +75,20 @@ class TestList:
 
 
 class TestPlace:
+    @staticmethod
+    def _handle(request: httpx.Request) -> httpx.Response | None:
+        """The session is 2FA-unlocked, so place() proceeds straight to the order."""
+        if request.url.path == "/api/sessiontan/isauthorized":
+            return httpx.Response(200, text="true")
+        if request.url.path == "/api/trading/order/verify":
+            return httpx.Response(200)  # precheck: 200, empty body
+        return None
+
     def test_parses_recorded_payload(self, load_fixture: Callable[[str, str], Any]) -> None:
         def handler(request: httpx.Request) -> httpx.Response:
-            if request.url.path == "/api/trading/order/verify":
-                return httpx.Response(200)  # precheck: 200, empty body
+            probe = self._handle(request)
+            if probe is not None:
+                return probe
             return httpx.Response(200, content=_fixture_body(load_fixture, "order_placed"))
 
         order = _client(handler).orders.place(_limit_request())
@@ -94,12 +104,13 @@ class TestPlace:
 
         def handler(request: httpx.Request) -> httpx.Response:
             seen.append(request)
-            if request.url.path == "/api/trading/order/verify":
-                return httpx.Response(200)
+            probe = self._handle(request)
+            if probe is not None:
+                return probe
             return httpx.Response(200, content=_fixture_body(load_fixture, "order_placed"))
 
         _client(handler).orders.place(_limit_request())
-        assert [r.url.path for r in seen if r.url.path != "/version.info"] == [
+        assert [r.url.path for r in seen if r.url.path not in ("/version.info", "/api/sessiontan/isauthorized")] == [
             "/api/trading/order/verify",
             "/api/trading/order",
         ]
@@ -123,6 +134,8 @@ class TestPlace:
         body = _fixture_body(load_fixture, "order_rejected")
 
         def handler(request: httpx.Request) -> httpx.Response:
+            if request.url.path == "/api/sessiontan/isauthorized":
+                return httpx.Response(200, text="true")
             if request.url.path == "/api/trading/order/verify":
                 return httpx.Response(200)
             return httpx.Response(406, content=body, headers={"content-type": "application/json"})
@@ -134,15 +147,31 @@ class TestPlace:
         assert "Handelszeiten" in exc_info.value.message
 
     def test_unexpected_success_envelope_fails_loudly(self) -> None:
-        client = _client(lambda r: httpx.Response(200, content=b'{"status":"error"}'))
+        def handler(request: httpx.Request) -> httpx.Response:
+            if request.url.path == "/api/sessiontan/isauthorized":
+                return httpx.Response(200, text="true")
+            return httpx.Response(200, content=b'{"status":"error"}')
+
         with pytest.raises(ValueError, match="placing"):
-            client.orders.place(_limit_request())
+            _client(handler).orders.place(_limit_request())
 
 
 class TestCancel:
+    @staticmethod
+    def _handle(request: httpx.Request) -> httpx.Response | None:
+        """The session is 2FA-unlocked, so cancel() proceeds straight to the cancel."""
+        if request.url.path == "/api/sessiontan/isauthorized":
+            return httpx.Response(200, text="true")
+        return None
+
     def test_parses_recorded_payload(self, load_fixture: Callable[[str, str], Any]) -> None:
-        client = _client(lambda r: httpx.Response(200, content=_fixture_body(load_fixture, "order_cancelled")))
-        order = client.orders.cancel("GBRd5d801c6318847aea56587e4deb8afdb")
+        def handler(request: httpx.Request) -> httpx.Response:
+            probe = self._handle(request)
+            if probe is not None:
+                return probe
+            return httpx.Response(200, content=_fixture_body(load_fixture, "order_cancelled"))
+
+        order = _client(handler).orders.cancel("GBRd5d801c6318847aea56587e4deb8afdb")
         assert order.status == "Open_CreatedCancel"
         assert order.cancel_date is None
 
@@ -152,6 +181,9 @@ class TestCancel:
         def handler(request: httpx.Request) -> httpx.Response:
             seen["path"] = request.url.path
             seen["body"] = request.content.decode()
+            probe = self._handle(request)
+            if probe is not None:
+                return probe
             return httpx.Response(200, content=_fixture_body(load_fixture, "order_cancelled"))
 
         _client(handler).orders.cancel("GBRd5d801c6318847aea56587e4deb8afdb")
