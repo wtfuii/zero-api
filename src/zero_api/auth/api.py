@@ -64,6 +64,32 @@ def http_login(http: httpx.Client, email: str, password: str) -> AuthSession:
     return AuthSession.from_cookies({c.name: c.value or "" for c in http.cookies.jar})
 
 
+def http_refresh(http: httpx.Client, session: AuthSession) -> AuthSession:
+    """Cheap single-call re-authentication from the session's refresh token.
+
+    Mimics the SPA's REFRESH_TOKEN_AUTH flow (recorded exchange, login.md
+    open question 6): no SRP round needed, and Cognito does NOT rotate the
+    refresh token — only the IdToken is re-saved (``__i``), ``__r`` stays valid.
+    """
+    refresh_token = session.cookies.get("__r")
+    if not refresh_token:
+        raise AuthenticationError("no __r (RefreshToken) cookie to refresh the session")
+    response = _authc(
+        http,
+        "InitiateAuth",
+        {
+            "AuthFlow": "REFRESH_TOKEN_AUTH",
+            "ClientId": _CLIENT_ID,
+            "AuthParameters": {"REFRESH_TOKEN": refresh_token},
+        },
+    )
+    result = response.get("AuthenticationResult")
+    if not isinstance(result, dict) or not result.get("IdToken"):
+        raise AuthenticationError("refresh did not return a token result")
+    _save_token(http, result["IdToken"])
+    return AuthSession.from_cookies({c.name: c.value or "" for c in http.cookies.jar})
+
+
 def _authc(http: httpx.Client, target: str, payload: dict[str, Any]) -> dict[str, Any]:
     response = http.post(
         "/apic/authc",

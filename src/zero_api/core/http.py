@@ -12,7 +12,7 @@ from time import time
 
 import httpx
 
-from zero_api.auth.api import http_login
+from zero_api.auth.api import http_login, http_refresh
 from zero_api.auth.models import AuthSession
 from zero_api.core.exceptions import AuthenticationError, BrokerApiError
 
@@ -79,12 +79,11 @@ class AppHttp:
     def _request(
         self, method: str, path: str, params: dict[str, str] | None, json: Any = None
     ) -> httpx.Response:
-        if self._session is None:
-            self._login()
+        self._ensure_session()
         response = self._http.request(method, path, params=params, json=json, headers=self._auth_headers())
-        if response.status_code in (401, 403) and self._relogin is not None:
+        if response.status_code in (401, 403) and self._can_reauth():
             # session rejected/expired → re-authenticate once, then retry
-            self._login()
+            self._ensure_session(force=True)
             response = self._http.request(method, path, params=params, json=json, headers=self._auth_headers())
         if response.is_error:
             self._raise_api_error(response)
@@ -107,15 +106,35 @@ class AppHttp:
             )
 
     def _login(self) -> None:
+        self.apply_session(self._reauth())
+
+    def _ensure_session(self, *, force: bool = False) -> None:
+        """Have a session whose IdToken is still valid; establish/refresh otherwise."""
+        if self._session is not None and not force and not self._session.id_token_expired():
+            return
+        self.apply_session(self._reauth())
+
+    def _can_reauth(self) -> bool:
+        return (
+            self._relogin is not None
+            or self._credentials is not None
+            or (self._session is not None and "__r" in self._session.cookies)
+        )
+
+    def _reauth(self) -> AuthSession:
+        """New session: refresh from ``__r`` when possible, else full login."""
+        if self._session is not None and "__r" in self._session.cookies:
+            try:
+                return http_refresh(self._http, self._session)
+            except (AuthenticationError, httpx.HTTPError):
+                pass  # refresh token dead/rejected → fall through to a full login
         if self._relogin is not None:
-            session = self._relogin()
-        elif self._credentials is not None:
+            return self._relogin()
+        if self._credentials is not None:
             # http-first login (SRP via /apic/authc) on this same session —
             # the browser fallback was retired once SRP existed (waf_probe.md).
-            session = http_login(self._http, *self._credentials)
-        else:
-            raise AuthenticationError("not authenticated and no login method configured")
-        self.apply_session(session)
+            return http_login(self._http, *self._credentials)
+        raise AuthenticationError("not authenticated and no login method configured")
 
     def _auth_headers(self) -> dict[str, str]:
         headers = {"x-xsrf-token": self._http.cookies.get("XSRF-TOKEN", "") or ""}

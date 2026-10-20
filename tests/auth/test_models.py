@@ -2,6 +2,7 @@
 
 import base64
 import json
+import time
 
 import pytest
 
@@ -37,3 +38,25 @@ class TestAuthSessionFromCookies:
         token = f"{_b64({'alg': 'RS256'})}.{_b64({'prm': prm})}.sig"
         with pytest.raises(AuthenticationError, match="prm"):
             AuthSession.from_cookies({"__i": token})
+
+
+class TestIdTokenExpired:
+    def test_expired_token_is_true(self) -> None:
+        token = f"{_b64({'alg': 'RS256'})}.{_b64({'prm': '{}', 'exp': time.time() - 1})}.sig"
+        session = AuthSession(cookies={"__i": token}, customer_id="1")
+        assert session.id_token_expired() is True
+
+    def test_future_expiry_is_false(self) -> None:
+        token = f"{_b64({'alg': 'RS256'})}.{_b64({'prm': '{}', 'exp': time.time() + 3600})}.sig"
+        session = AuthSession(cookies={"__i": token}, customer_id="1")
+        assert session.id_token_expired() is False
+
+    def test_near_expiry_within_margin_is_true(self) -> None:
+        token = f"{_b64({'alg': 'RS256'})}.{_b64({'prm': '{}', 'exp': time.time() + 10})}.sig"
+        session = AuthSession(cookies={"__i": token}, customer_id="1")
+        assert session.id_token_expired(margin_seconds=30) is True
+
+    def test_opaque_token_is_not_expired(self) -> None:
+        # fake/unparseable __i: let the server decide via the 401 path
+        session = AuthSession(cookies={"__i": "fake-token"}, customer_id="1")
+        assert session.id_token_expired() is False

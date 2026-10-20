@@ -5,17 +5,24 @@ SPA flow shapes (docs/explorations/login.md, login.capture.json).
 import base64
 import json
 from collections.abc import Callable
+from pathlib import Path
 from typing import Any
 
 import httpx
 import pytest
 
-from zero_api.auth.api import http_login
+from zero_api.auth.api import http_login, http_refresh
+from zero_api.auth.models import AuthSession
 from zero_api.core.exceptions import AuthenticationError
+
+# recorded refresh-response shape (raw.har, sanitized): no RefreshToken in it
+_REFRESH_RESULT: dict[str, Any] = json.loads(
+    (Path(__file__).parent / "fixtures" / "refresh_flow.json").read_text()
+)["result"]
 
 
 class _Recorder:
-    """Mock server speaking the recorded login flow, remembering every call."""
+    """Mock server speaking the recorded login/refresh flow, remembering every call."""
 
     def __init__(self, fixture: dict[str, Any]) -> None:
         self.challenge = fixture["challenge"]
@@ -27,6 +34,8 @@ class _Recorder:
         path = request.url.path
         if path == "/apic/authc":
             target = request.headers["x-amz-target"].rsplit(".", 1)[-1]
+            if target == "InitiateAuth" and json.loads(request.read() or b"{}").get("AuthFlow") == "REFRESH_TOKEN_AUTH":
+                return httpx.Response(200, json=_REFRESH_RESULT)
             if target == "InitiateAuth":
                 return httpx.Response(200, json=self.challenge)
             return httpx.Response(200, json=self.result)
@@ -110,3 +119,30 @@ class TestLoudFailures:
         http = httpx.Client(base_url="https://mein.finanzen-zero.net", transport=httpx.MockTransport(handle))
         with pytest.raises(AuthenticationError, match="WAF"):
             http_login(http, "probe@example.com", "pw")
+
+
+class TestHttpRefresh:
+    def test_mimics_recorded_refresh_flow(self, load_fixture: Callable[[str, str], Any]) -> None:
+        recorder = _Recorder(load_fixture("auth", "login_flow"))
+        client = _login(recorder)
+        session = http_login(client, "probe@example.com", "pw")  # establishes __r/__i
+
+        recorder.calls.clear()
+        refreshed = http_refresh(client, session)
+
+        assert [path for path, _h, _b in recorder.calls] == ["/apic/authc", "/api/auth/save"]
+        assert recorder.calls[0][1]["x-amz-target"] == "AWSCognitoIdentityProviderService.InitiateAuth"
+        payload = json.loads(recorder.calls[0][2])
+        assert payload["AuthFlow"] == "REFRESH_TOKEN_AUTH"
+        assert payload["AuthParameters"]["REFRESH_TOKEN"] == recorder.result["AuthenticationResult"]["RefreshToken"]
+        assert "ClientMetadata" not in payload  # recorded request carries none
+        # only the new IdToken is re-saved (no rotation — __r stays valid)
+        assert recorder.calls[1][2].decode() == _REFRESH_RESULT["AuthenticationResult"]["IdToken"]
+        assert refreshed.cookies["__i"] == _REFRESH_RESULT["AuthenticationResult"]["IdToken"]
+        assert refreshed.cookies["__r"] == recorder.result["AuthenticationResult"]["RefreshToken"]
+        assert refreshed.customer_id == "4917975"
+
+    def test_no_refresh_token_raises(self) -> None:
+        http = httpx.Client(base_url="https://mein.finanzen-zero.net")
+        with pytest.raises(AuthenticationError, match="__r"):
+            http_refresh(http, AuthSession(cookies={"__i": "t"}, customer_id="1"))

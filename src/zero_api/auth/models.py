@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import base64
 import json
+from time import time
 from typing import Any
 
 from pydantic import BaseModel
@@ -24,6 +25,24 @@ class AuthSession(BaseModel):
         if not id_token:
             raise AuthenticationError("no __i (IdToken) cookie after login")
         return cls(cookies=cookies, customer_id=_customer_id_from_id_token(id_token))
+
+    def id_token_expired(self, *, margin_seconds: int = 30) -> bool:
+        """True when the IdToken (``__i``, 1h TTL) is expired or about to be.
+
+        Unreadable/opaque tokens are treated as not expired — the server then
+        decides via the 401/403 path (keeps fake/test sessions working).
+        """
+        try:
+            token = self.cookies.get("__i")
+            if not token:
+                return False
+            payload = _decode_jwt_payload(token)
+        except AuthenticationError:
+            return False
+        exp = payload.get("exp")
+        if not isinstance(exp, (int, float)):
+            return False
+        return time() + margin_seconds >= exp
 
 
 def _customer_id_from_id_token(id_token: str) -> str:
