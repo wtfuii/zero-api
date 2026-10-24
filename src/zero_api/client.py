@@ -11,6 +11,7 @@ import httpx
 from zero_api.account.api import AccountApi
 from zero_api.auth.models import AuthSession
 from zero_api.core.http import AppHttp
+from zero_api.instrument.api import InstrumentApi
 from zero_api.ordering.api import OrderingApi
 from zero_api.portfolio.api import PortfolioApi
 from zero_api.sessiontan.api import SessionTanApi
@@ -37,6 +38,7 @@ class ZeroClient:
     ) -> None:
         self._http = AppHttp(http=http, relogin=login, email=email, password=password)
         self.account = AccountApi(self._http)
+        self.instrument = InstrumentApi(self._http)
         self.portfolio = PortfolioApi(self._http)
         self.watchlist = WatchlistApi(self._http)
         self.sessiontan = SessionTanApi(self._http, default_device=default_device)

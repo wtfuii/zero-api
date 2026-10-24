@@ -1,0 +1,106 @@
+{
+  "isin": "DE0007030009",
+  "wkn": "703000",
+  "shortName": "Rheinmetall",
+  "longName": "Rheinmetall AG",
+  "symbol": "RHM",
+  "type": "AKTIE",
+  "optionType": null,
+  "basisinformationen": null,
+  "jahresbericht": null,
+  "halbjahresbericht": null,
+  "verkaufsprospekt": null,
+  "leverage": false,
+  "complex": false,
+  "notiz": "STUECK",
+  "underlyingIsin": null,
+  "underlying": null,
+  "sparplan": true,
+  "priceScale": 2,
+  "qtyScale": 0,
+  "minQty": 1.0,
+  "maxAmount": null,
+  "qtyIncr": 1.0,
+  "priceIncr": 0.01,
+  "fractionalTrading": true,
+  "weekendTrading": true,
+  "finnetShortName": "Rheinmetall",
+  "finnetName": "Rheinmetall AG",
+  "tradable": "OPEN",
+  "minimumOrderValue": 0.01,
+  "lowTradingThreshold": 500.0,
+  "lowTradingThresholdQuantity": 0.0,
+  "quoteCurrencyCode": "EUR",
+  "marketName": "gettex",
+  "isOTC": false,
+  "tradingVenues": [
+    {
+      "tradingVenueName": "gettex",
+      "micCode": "MUNC",
+      "tradingHoursStart": "07:30:00",
+      "tradingHoursStop": "23:00:00",
+      "fractionalTrading": true,
+      "weekendTrading": true,
+      "savingsPlan": true,
+      "defaultVenue": true,
+      "tradingFees": {
+        "minimumQuantitySurcharge": 1.0,
+        "fractionalSurcharge": 1.0,
+        "feePct": 0.0,
+        "savingsPlanFeePct": 0.0,
+        "tradingVenueFee": 0.0
+      }
+    },
+    {
+      "tradingVenueName": "Tradegate",
+      "micCode": "TGAT",
+      "tradingHoursStart": "07:30:00",
+      "tradingHoursStop": "22:00:00",
+      "fractionalTrading": false,
+      "weekendTrading": false,
+      "savingsPlan": false,
+      "defaultVenue": false,
+      "tradingFees": {
+        "minimumQuantitySurcharge": 1.0,
+        "fractionalSurcharge": 1.0,
+        "feePct": 0.0,
+        "savingsPlanFeePct": 0.0,
+        "tradingVenueFee": 2.0
+      }
+    }
+  ],
+  "knockedOutFlag": false,
+  "turboKnockOutTestRequired": false,
+  "tradingHoursStartTime": "07:30",
+  "tradingHoursStopTime": "23:00",
+  "quantityUnitCode": "STUECK",
+  "emittentShortCode": null,
+  "nominal": 1,
+  "endfaellig": false,
+  "iconUrl": "https://mein.finanzen-zero.net/assets/icons/rheinmetall_com/icon.jpeg",
+  "disabledExecTypes": [],
+  "historicQuotes": [
+    {
+      "id": 1310778806,
+      "bid": 1031.0,
+      "ask": 1035.0,
+      "ts": "2026-10-15T20:42:34.308Z",
+      "isin": "DE0007030009"
+    }
+  ],
+  "quote": null,
+  "ranking": {
+    "rankTotal": 1,
+    "trend": 1
+  },
+  "sentiment": {
+    "buy": 48,
+    "sell": 52
+  },
+  "tradingFees": {
+    "minimumQuantitySurcharge": 1.0,
+    "fractionalSurcharge": 1.0,
+    "feePct": 0.0,
+    "feeSavingsplanPct": 0.0
+  }
+}

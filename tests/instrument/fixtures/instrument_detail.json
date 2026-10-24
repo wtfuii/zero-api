@@ -1,0 +1,76 @@
+{
+  "name": "Rheinmetall AG",
+  "isin": "DE0007030009",
+  "first": 1034.2,
+  "high": 1096.8,
+  "last": 1090.8,
+  "low": 1032.4,
+  "netChange": 59.8,
+  "percent": 5.80019,
+  "performanceCurrentYear": -29.12972,
+  "prevDay": 1031.0,
+  "revenue": 23456.0,
+  "w52Close": 1676.5,
+  "w52High": 1965.0,
+  "w52HighDate": "19.01.2026",
+  "w52low": 902.0,
+  "w52LowDate": "25.06.2026",
+  "instrumentType": 1,
+  "outstandingShares": 45894801.0,
+  "volume": 25254328,
+  "currency": "EUR",
+  "date": "16.10.2026",
+  "exchange": "BMN",
+  "prevDayDatetime": "15.10.2026 22:57:56",
+  "pushIdentifier": "Y0101532000345850",
+  "sourceDatetime": "16.10.2026 22:55:24",
+  "symbol": "703000",
+  "time": "22:55:24",
+  "tkIdentifier": "1330,345850,1330,814",
+  "wpkn": "703000",
+  "country": "Deutschland",
+  "branches": [
+    "Anlagen- / Maschinenbau",
+    "Automobilzulieferer",
+    "Elektrotechnologie",
+    "R\u00fcstungsindustrie"
+  ],
+  "profile": "Die Rheinmetall AG blickt auf eine lange Tradition zur\u00fcck, deren Anf\u00e4nge im 19. Jahrhundert liegen. Urspr\u00fcnglich z\u00e4hlte das Unternehmen zu den Motorenspezialisten der ersten Automobilgenerationen. Heute agiert Rheinmetall als Management-Holding mit spezialisierten Tochtergesellschaften in den Bereichen Automobilzulieferung und Wehrtechnik. Das Automotive-Segment, gef\u00fchrt von der ehemals b\u00f6rsennotierten Kolbenschmidt Pierburg AG, fokussiert sich auf die Entwicklung und Produktion von Modulen und Systemen f\u00fcr Motoren. Parallel dazu geh\u00f6rt die Defence-Sparte zu den f\u00fchrenden Akteuren der internationalen Verteidigungs- und Sicherheitsindustrie. Rheinmetall operiert global und erzielt mehr als zwei Drittel seines Umsatzes au\u00dferhalb Deutschlands, wodurch die Aktiengesellschaft eine bedeutende Rolle auf den weltweiten M\u00e4rkten einnimmt.",
+  "dividends": [
+    {
+      "year": "2020",
+      "dividendYieldPercentage": 2.31,
+      "dividend": 2.0
+    },
+    {
+      "year": "2021",
+      "dividendYieldPercentage": 3.97,
+      "dividend": 3.3
+    },
+    {
+      "year": "2022",
+      "dividendYieldPercentage": 2.31,
+      "dividend": 4.3
+    },
+    {
+      "year": "2023",
+      "dividendYieldPercentage": 1.99,
+      "dividend": 5.7
+    },
+    {
+      "year": "2024",
+      "dividendYieldPercentage": 1.32,
+      "dividend": 8.1
+    },
+    {
+      "year": "2025",
+      "dividendYieldPercentage": 0.74,
+      "dividend": 11.5
+    },
+    {
+      "year": "2026e",
+      "dividendYieldPercentage": 1.42,
+      "dividend": 14.71
+    }
+  ]
+}
