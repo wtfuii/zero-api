@@ -100,14 +100,14 @@ class AppHttp:
         self._ensure_session()
         response = self._http.request(
             method, path, params=params, json=json, content=content,
-            headers={**self._auth_headers(), **({"content-type": "text/plain"} if text_body else {})},
+            headers=self._headers(path, text_body),
         )
         if response.status_code in (401, 403) and self._can_reauth():
             # session rejected/expired → re-authenticate once, then retry
             self._ensure_session(force=True)
             response = self._http.request(
                 method, path, params=params, json=json, content=content,
-                headers={**self._auth_headers(), **({"content-type": "text/plain"} if text_body else {})},
+                headers=self._headers(path, text_body),
             )
         if response.is_error:
             self._raise_api_error(response)
@@ -165,6 +165,20 @@ class AppHttp:
         build = self._fz_build_header()
         if build:
             headers["x-fz-build"] = build
+        return headers
+
+    def _headers(self, path: str, text_body: bool) -> dict[str, str]:
+        headers = {
+            **self._auth_headers(),
+            **({"content-type": "text/plain"} if text_body else {}),
+        }
+        # /apic/* endpoints authenticate with the raw Cognito IdToken
+        # (x-gb-authorization, order.md): observed on exante and knockout, never
+        # on /api/*. /apic/authc itself carries none, so it is excluded.
+        if path.startswith("/apic/") and path != "/apic/authc":
+            token = self._http.cookies.get("__i")
+            if token is not None:
+                headers["x-gb-authorization"] = token
         return headers
 
     def _fz_build_header(self) -> str:

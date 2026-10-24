@@ -89,6 +89,8 @@ class TestPlace:
             probe = self._handle(request)
             if probe is not None:
                 return probe
+            if request.url.path == "/apic/exante":
+                return httpx.Response(200, content=_fixture_body(load_fixture, "exante"))
             return httpx.Response(200, content=_fixture_body(load_fixture, "order_placed"))
 
         order = _client(handler).orders.place(_limit_request())
@@ -107,13 +109,27 @@ class TestPlace:
             probe = self._handle(request)
             if probe is not None:
                 return probe
+            if request.url.path == "/apic/exante":
+                return httpx.Response(200, content=_fixture_body(load_fixture, "exante"))
             return httpx.Response(200, content=_fixture_body(load_fixture, "order_placed"))
 
         _client(handler).orders.place(_limit_request())
         assert [r.url.path for r in seen if r.url.path not in ("/version.info", "/api/sessiontan/isauthorized")] == [
             "/api/trading/order/verify",
+            "/apic/exante",
             "/api/trading/order",
         ]
+        # the ex-ante call carries the raw IdToken; the /api/* order call does not
+        exante = next(r for r in seen if r.url.path == "/apic/exante")
+        assert exante.headers["x-gb-authorization"] == "fake-token"
+        assert json.loads(exante.content) == {
+            "isin": "GB00BJVQC708",
+            "customerId": "1234567",
+            "sparplan": False,
+            "execType": "limit",
+            "micCode": "MUNC",
+        }
+        assert "x-gb-authorization" not in seen[-1].headers
         body = json.loads(seen[-1].content)
         assert body == {
             "customer": "1234567",
@@ -146,10 +162,14 @@ class TestPlace:
         assert exc_info.value.status == 406
         assert "Handelszeiten" in exc_info.value.message
 
-    def test_unexpected_success_envelope_fails_loudly(self) -> None:
+    def test_unexpected_success_envelope_fails_loudly(
+        self, load_fixture: Callable[[str, str], Any]
+    ) -> None:
         def handler(request: httpx.Request) -> httpx.Response:
             if request.url.path == "/api/sessiontan/isauthorized":
                 return httpx.Response(200, text="true")
+            if request.url.path == "/apic/exante":
+                return httpx.Response(200, content=_fixture_body(load_fixture, "exante"))
             return httpx.Response(200, content=b'{"status":"error"}')
 
         with pytest.raises(ValueError, match="placing"):

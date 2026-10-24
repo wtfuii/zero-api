@@ -1,12 +1,14 @@
 """Ordering slice: place, list and cancel orders.
 
-Endpoints from docs/explorations/order.md and order_limit.md. Not part of the
-flow (yet): POST /apic/exante — the mandatory ex-ante cost document needs an
-unattributed ``x-gb-authorization`` JWT (order.md open question 6).
+Endpoints from docs/explorations/order.md and order_limit.md. place() mimics
+the site's full submit flow: verify → /apic/exante (ex-ante Kostenausweis;
+x-gb-authorization = raw Cognito IdToken, see core/http._headers) → the order.
 """
 
+from typing import Any
+
 from zero_api.core.http import AppHttp
-from zero_api.ordering.models import Order, OrderRequest, OrdersPage
+from zero_api.ordering.models import ExanteResult, Order, OrderRequest, OrdersPage
 from zero_api.sessiontan.api import SessionTanApi
 from zero_api.sessiontan.models import EnrolledDevice
 
@@ -42,8 +44,9 @@ class OrderingApi:
         return OrdersPage.model_validate(data)
 
     def place(self, order: OrderRequest, *, device: str | EnrolledDevice | None = None) -> Order:
-        """Place an order (after the site's own /verify precheck with the same
-        payload) and return the created order object with status "Created".
+        """Place an order (after the site's own /verify precheck and the
+        /apic/exante ex-ante cost document, both derived from the same payload)
+        and return the created order object with status "Created".
 
         Auto-unlocks the 2FA order-execution session first when locked
         (order_2fa.md), pushing to ``device`` if given, else the configured
@@ -55,8 +58,19 @@ class OrderingApi:
         payload["customer"] = self._http.customer_id
         self._ensure_unlocked(device)
         self._http.post_json("/api/trading/order/verify", json=payload)
+        ExanteResult.model_validate(self._http.post_json("/apic/exante", json=self._exante_payload(order)))
         data = self._http.post_json("/api/trading/order", json=payload)
         return Order.model_validate(_success_order(data, "placing"))
+
+    def _exante_payload(self, order: OrderRequest) -> dict[str, Any]:
+        """Ex-ante request shape (order.md): per-submit, derived from the order."""
+        return {
+            "isin": order.isin,
+            "customerId": self._http.customer_id,
+            "sparplan": False,
+            "execType": order.exec_type.value,
+            "micCode": order.mic_code,
+        }
 
     def cancel(self, order_id: str, *, device: str | EnrolledDevice | None = None) -> Order:
         """Delete (cancel) an order by its string orderId. Like place(), it

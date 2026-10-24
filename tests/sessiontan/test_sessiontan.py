@@ -190,6 +190,7 @@ class TestOrderingIntegration:
             ("GET", "authstate"): [_PENDING, _ACCEPTED],
             ("POST", "verifyauth"): [_AUTHORIZED],
             ("POST", "order/verify"): [""],
+            ("POST", "exante"): [json.dumps(load_fixture("ordering", "exante"))],
             ("POST", "/api/trading/order"): [placed],
         }
 
@@ -205,16 +206,18 @@ class TestOrderingIntegration:
             ("GET", f"/api/appauth/authstate/{_HANDLE}"),
             ("POST", "/api/sessiontan/verifyauth?customerId=1234567"),
             ("POST", "/api/trading/order/verify"),
+            ("POST", "/apic/exante"),
             ("POST", "/api/trading/order"),
         ]
 
     def test_place_on_authorized_session_skips_2fa(self, load_fixture: Callable[[str, str], Any]) -> None:
         broker = FakeBroker(self._routes(load_fixture, _AUTHORIZED))
         _client(broker).orders.place(self._order())
-        # only the probe, then the two order calls — no push flow
+        # only the probe, then the three order-flow calls — no push flow
         assert [(m, p) for m, p, _, _ in broker.requests] == [
             ("GET", "/api/sessiontan/isauthorized?customerId=1234567"),
             ("POST", "/api/trading/order/verify"),
+            ("POST", "/apic/exante"),
             ("POST", "/api/trading/order"),
         ]
 

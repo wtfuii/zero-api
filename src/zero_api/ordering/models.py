@@ -60,6 +60,17 @@ class OrderRequest(BaseModel):
         return dt.astimezone(UTC).isoformat().replace("+00:00", "Z")
 
 
+class ExanteResult(BaseModel):
+    """Response of POST /apic/exante (order.md): the ex-ante Kostenausweis is
+    generated into the Posteingang; the call reports doc id + uri, no content."""
+
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, extra="forbid")
+
+    success: bool
+    posteingang_id: str
+    uri: str
+
+
 class Order(BaseModel):
     """One order object, as returned by placement, listing and cancellation.
 
