@@ -1,6 +1,6 @@
 """Models for the money-transaction (Verrechnungskonto) account.
 
-Shape of GET /api/moneytransaction/account/ — see docs/explorations/account.md.
+Shape of GET /api/moneytransaction/account/.
 ``extra="forbid"`` so silent schema drift by the broker fails loudly.
 """
 

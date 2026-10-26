@@ -1,5 +1,4 @@
-"""Models for the ordering slice — see docs/explorations/order.md, order_limit.md
-and order_types.md."""
+"""Models for the ordering slice: order placement, order limits and order types."""
 
 from datetime import UTC, datetime
 from decimal import Decimal
@@ -11,7 +10,7 @@ from pydantic.alias_generators import to_camel
 
 
 class ExecType(StrEnum):
-    """Wire values of the order request's ``execType`` (order_types.md).
+    """Wire values of the order request's ``execType``.
 
     All types were captured as /verify payloads except ``stop`` (plain
     Stopp-Loss, only seen in an exante call) — left out until verified.
@@ -54,8 +53,8 @@ class OrderRequest(BaseModel):
     The site always sends every key, ``null`` included, so serialization never
     excludes fields. Money fields go out as bare JSON numbers like the site's
     (precision is only relevant on the response side, parsed as Decimal).
-    ``valid_to_date`` unset means "now" — what the UI sends for market orders
-    (order.md); GTD limit orders pass an explicit date (order_limit.md).
+    ``valid_to_date`` unset means "now" — what the UI sends for market orders;
+    GTD limit orders pass an explicit date.
     """
 
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, extra="forbid")
@@ -85,7 +84,7 @@ class OrderRequest(BaseModel):
 
 
 class ExanteResult(BaseModel):
-    """Response of POST /apic/exante (order.md): the ex-ante Kostenausweis is
+    """Response of POST /apic/exante: the ex-ante Kostenausweis is
     generated into the Posteingang; the call reports doc id + uri, no content."""
 
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, extra="forbid")

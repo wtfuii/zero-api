@@ -16,8 +16,7 @@ class WatchlistApi:
     def add_to_watchlist(self, isin: str) -> WatchlistEntry:
         """Add an instrument (by ISIN) to the watchlist and return the created entry.
 
-        Server prepends it with wlOrder 0; already-on-list behaviour unverified
-        (docs/explorations/watchlist_add.md).
+        Server prepends it with wlOrder 0; already-on-list behaviour unverified.
         """
         data = self._http.post_json(f"/api/wl/{isin}", params={"customerId": self._http.customer_id}, json={})
         return WatchlistEntry.model_validate(data)
@@ -27,7 +26,7 @@ class WatchlistApi:
 
         Success body is the JSON literal ``true``; anything else (error cases —
         ISIN not on list etc. — unverified) fails loudly instead of pretending
-        success (docs/explorations/watchlist_remove.md).
+        success.
         """
         data = self._http.delete_json(f"/api/wl/{isin}", params={"customerId": self._http.customer_id})
         if data is not True:

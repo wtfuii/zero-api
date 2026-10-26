@@ -18,7 +18,7 @@ from zero_api.core.exceptions import AuthenticationError, BrokerApiError
 
 BASE_URL = "https://mein.finanzen-zero.net"
 
-# Chrome UA as captured (2026-10-16, docs/explorations/login.md).
+# Chrome UA as captured from the site (2026-10-16).
 _USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36"
@@ -29,7 +29,7 @@ class AppHttp:
     """Cookie-based HTTP session for the ZERO app APIs.
 
     Sends no Authorization header — auth is purely the session cookies
-    (``__i``, ``__r``, see login.md). On 401/403 the session is re-established
+    (``__i``, ``__r``). On 401/403 the session is re-established
     once and the request retried.
     """
 
@@ -67,7 +67,7 @@ class AppHttp:
         return _json_or_none(response)
 
     def get_text(self, path: str, params: dict[str, str] | None = None) -> str:
-        """GET whose body is a plain-text literal (e.g. sessiontan probes, order_2fa.md)."""
+        """GET whose body is a plain-text literal (e.g. sessiontan probes)."""
         response = self._request("GET", path, params)
         response.raise_for_status()
         return response.text
@@ -78,7 +78,7 @@ class AppHttp:
         return _json_or_none(response)
 
     def post_text(self, path: str, params: dict[str, str] | None = None, content: str = "") -> str:
-        """POST with a text/plain body and a plain-text response (order_2fa.md)."""
+        """POST with a text/plain body and a plain-text response."""
         response = self._request("POST", path, params, content=content, text_body=True)
         response.raise_for_status()
         return response.text
@@ -156,7 +156,7 @@ class AppHttp:
             return self._relogin()
         if self._credentials is not None:
             # http-first login (SRP via /apic/authc) on this same session —
-            # the browser fallback was retired once SRP existed (waf_probe.md).
+            # the browser fallback was retired once SRP existed.
             return http_login(self._http, *self._credentials)
         raise AuthenticationError("not authenticated and no login method configured")
 
@@ -173,7 +173,7 @@ class AppHttp:
             **({"content-type": "text/plain"} if text_body else {}),
         }
         # /apic/* endpoints authenticate with the raw Cognito IdToken
-        # (x-gb-authorization, order.md): observed on exante and knockout, never
+        # (x-gb-authorization): observed on exante and knockout, never
         # on /api/*. /apic/authc itself carries none, so it is excluded.
         if path.startswith("/apic/") and path != "/apic/authc":
             token = self._http.cookies.get("__i")
@@ -202,7 +202,7 @@ class AppHttp:
 
 def _json_or_none(response: httpx.Response) -> Any:
     """Parse the body, or None when empty — e.g. /api/trading/order/verify
-    answers 200 with an empty body (docs/explorations/order.md)."""
+    answers 200 with an empty body."""
     return response.json() if response.content else None
 
 

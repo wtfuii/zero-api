@@ -1,5 +1,4 @@
-"""Models for the 2FA order-execution unlock (session TAN / app push) —
-see docs/explorations/order_2fa.md."""
+"""Models for the 2FA order-execution unlock (session TAN / app push)."""
 
 from datetime import datetime
 from enum import StrEnum
@@ -23,8 +22,8 @@ class EnrolledDevice(BaseModel):
 
 class AuthState(StrEnum):
     """Wire values of GET /api/appauth/authstate/<handle>. Only these two were
-    captured (order_2fa.md open question 2) — declined/expired states are
-    deliberately absent so an unknown value fails loudly instead of guessing."""
+    captured — declined/expired states are deliberately absent so an unknown
+    value fails loudly instead of guessing."""
 
     PENDING = "AUTHORIZATION_INITIAL"
     ACCEPTED = "AUTHORIZATION_USER_ACCEPTED"

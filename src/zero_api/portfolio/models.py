@@ -1,6 +1,6 @@
 """Models for the depot positions (Depotbestände).
 
-Shape of GET /api/trading/positions — see docs/explorations/positions.md.
+Shape of GET /api/trading/positions.
 ``extra="forbid"`` so silent schema drift by the broker fails loudly.
 """
 

@@ -1,8 +1,8 @@
 """Ordering slice: place, list and cancel orders.
 
-Endpoints from docs/explorations/order.md and order_limit.md. place() mimics
-the site's full submit flow: verify → /apic/exante (ex-ante Kostenausweis;
-x-gb-authorization = raw Cognito IdToken, see core/http._headers) → the order.
+place() mimics the site's full submit flow: verify → /apic/exante (ex-ante
+Kostenausweis; x-gb-authorization = raw Cognito IdToken, see
+core/http._headers) → the order.
 """
 
 from typing import Any
@@ -48,8 +48,8 @@ class OrderingApi:
         /apic/exante ex-ante cost document, both derived from the same payload)
         and return the created order object with status "Created".
 
-        Auto-unlocks the 2FA order-execution session first when locked
-        (order_2fa.md), pushing to ``device`` if given, else the configured
+        Auto-unlocks the 2FA order-execution session first when locked,
+        pushing to ``device`` if given, else the configured
         default device (client.sessiontan.default_device), else the single
         enrolled device; with several enrolled and none specified, place()
         cannot choose and refuses — unlock first (client.sessiontan.unlock).
@@ -63,7 +63,7 @@ class OrderingApi:
         return Order.model_validate(_success_order(data, "placing"))
 
     def _exante_payload(self, order: OrderRequest) -> dict[str, Any]:
-        """Ex-ante request shape (order.md): per-submit, derived from the order."""
+        """Ex-ante request shape: per-submit, derived from the order."""
         return {
             "isin": order.isin,
             "customerId": self._http.customer_id,
@@ -74,9 +74,8 @@ class OrderingApi:
 
     def cancel(self, order_id: str, *, device: str | EnrolledDevice | None = None) -> Order:
         """Delete (cancel) an order by its string orderId. Like place(), it
-        demands the 2FA session unlock (order_2fa.md; the earlier "no 2FA
-        needed" note in order_limit.md only observed an already-unlocked
-        session), auto-unlocking with the same ``device`` resolution.
+        demands the 2FA session unlock, auto-unlocking with the same ``device``
+        resolution.
         Returns the order in a transition state such as
         "Open_CreatedCancel"; the final status was not observed."""
         self._ensure_unlocked(device)
@@ -88,6 +87,6 @@ class OrderingApi:
 
     def _ensure_unlocked(self, device: str | EnrolledDevice | None = None) -> None:
         """Probe the 2FA order-execution unlock and auto-unlock when locked
-        (order_2fa.md; the locked-order rejection itself was never captured)."""
+        (the locked-order rejection itself was never captured)."""
         if self._sessiontan is not None and not self._sessiontan.is_authorized():
             self._sessiontan.unlock(device)

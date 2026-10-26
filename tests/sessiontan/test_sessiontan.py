@@ -1,5 +1,5 @@
 """Tests for the 2FA order-execution unlock (sessiontan slice), run against
-recorded traffic (docs/explorations/order_2fa.md, order_2fa.capture.json)."""
+recorded traffic."""
 
 import json
 from collections.abc import Callable
@@ -16,7 +16,7 @@ from zero_api.ordering.models import ExecType, OrderRequest
 
 _SESSION = AuthSession(cookies={"__i": "fake-token", "XSRF-TOKEN": "fake-xsrf"}, customer_id="1234567")
 
-# Captured text/plain literals (order_2fa.capture.json).
+# Captured text/plain literals.
 _LOCKED = "false"
 _AUTHORIZED = "true"
 _HANDLE = "AB12CD34EF56GH78"  # recorded shape: 16-char uppercase alphanumeric
@@ -164,8 +164,8 @@ class TestUnlock:
             _client(broker).sessiontan.unlock("<device-serial-2>", timeout=-1.0)
 
     def test_unknown_state_fails_loudly(self) -> None:
-        # decline/expiry state names were never captured (order_2fa.md open
-        # question 2) — a guess would silently misinterpret the real ones.
+        # decline/expiry state names were never captured — a guess would
+        # silently misinterpret the real ones.
         broker = FakeBroker({
             ("POST", "requestauth"): [_HANDLE],
             ("GET", "authstate"): [_PENDING, "AUTHORIZATION_USER_DECLINED"],

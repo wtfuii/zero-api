@@ -48,9 +48,9 @@ class AuthSession(BaseModel):
 def _customer_id_from_id_token(id_token: str) -> str:
     """Extract the customerId from the IdToken's ``prm`` claim.
 
-    ``prm`` is a JSON string mapping customerId -> account info (see
-    docs/explorations/account.md). Note: the Cognito username (``username``
-    claim / /api/auth/sync) is NOT the customerId.
+    ``prm`` is a JSON string mapping customerId -> account info. Note: the
+    Cognito username (``username`` claim / /api/auth/sync) is NOT the
+    customerId.
     """
     payload = _decode_jwt_payload(id_token)
     prm_raw = payload.get("prm")

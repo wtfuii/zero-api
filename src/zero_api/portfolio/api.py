@@ -13,7 +13,7 @@ class PortfolioApi:
 
         shortcut: not pageable (no page/size params observed, unlike /api/trading/orders),
         so a very large depot may come back truncated — revisit if hasNext is ever seen
-        true (docs/explorations/positions.md).
+        true.
         """
         data = self._http.get_json(
             "/api/trading/positions",

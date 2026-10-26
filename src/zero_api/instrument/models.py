@@ -1,11 +1,11 @@
 """Models for the instrument slice.
 
 Shapes of GET /api/instrument/{isin}, GET /api/instrument/detail/{isin} and
-GET /extapis/findata/chart — see docs/explorations/instrument.md.
+GET /extapis/findata/chart.
 ``extra="forbid"`` so silent schema drift by the broker fails loudly.
 
-Captured only for one share (Rheinmetall); ETF/fund/deriv pages may differ
-(instrument.md open question 7) — a drift there is a bug we want to see.
+Captured only for one share (Rheinmetall); ETF/fund/deriv pages may differ —
+a drift there is a bug we want to see.
 """
 
 from datetime import datetime
@@ -97,7 +97,7 @@ class Instrument(BaseModel):
     complex: bool
     notiz: str
     underlying_isin: str | None = None
-    # non-share shape unverified (instrument.md) — str assumed, drift fails loudly
+    # non-share shape unverified — str assumed, drift fails loudly
     underlying: str | None = None
     sparplan: bool
     price_scale: int
@@ -242,7 +242,7 @@ class InstrumentDetail(BaseModel):
 
 
 class ChartPeriod(StrEnum):
-    """Wire values of the chart endpoint's ``period`` query parameter (instrument.md)."""
+    """Wire values of the chart endpoint's ``period`` query parameter."""
 
     INTRADAY = "Intraday"
     ONE_WEEK = "OneWeek"

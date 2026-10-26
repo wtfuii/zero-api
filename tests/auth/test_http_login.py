@@ -1,5 +1,5 @@
 """Tests for the http-first login flow (auth/api.py) against the recorded
-SPA flow shapes (docs/explorations/login.md, login.capture.json).
+SPA flow shapes.
 """
 
 import base64
@@ -40,7 +40,7 @@ class _Recorder:
                 return httpx.Response(200, json=self.challenge)
             return httpx.Response(200, json=self.result)
         if path == "/api/auth/save":
-            # the server stores the raw-token body as cookie __r / __i (login.md)
+            # the server stores the raw-token body as cookie __r / __i
             token = request.read().decode()
             name = "__r" if token == self.result["AuthenticationResult"]["RefreshToken"] else "__i"
             return httpx.Response(200, content=b"", headers={"set-cookie": f"{name}={token}; Path=/; HttpOnly"})
@@ -115,8 +115,8 @@ class TestLoudFailures:
             http_login(http, "probe@example.com", "wrong")
 
     def test_waf_challenge_page_is_loud(self) -> None:
-        # waf_probe.md open question 1: WAF enforcement could be adaptive —
-        # a sudden challenge must fail loudly, not parse as a login.
+        # WAF enforcement could be adaptive — a sudden challenge must fail
+        # loudly, not parse as a login.
         def handle(request: httpx.Request) -> httpx.Response:
             return httpx.Response(403, text="<html>AWSCaptcha challenge</html>", headers={"x-amzn-waf-action": "captcha"})
 

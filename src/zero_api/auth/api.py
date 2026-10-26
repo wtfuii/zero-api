@@ -1,9 +1,7 @@
 """HTTP-first login: Cognito SRP through the app's own /apic/authc proxy.
 
-Mimics the SPA flow captured in docs/explorations/login.md (record order in
-login.capture.json); no browser and no aws-waf-token needed (see
-docs/explorations/waf_probe.md). The GetUser call after login is SPA
-user-info housekeeping and is skipped.
+Mimics the SPA flow's request order; no browser and no aws-waf-token needed.
+The GetUser call after login is SPA user-info housekeeping and is skipped.
 """
 
 import uuid
@@ -15,13 +13,13 @@ from zero_api.auth.models import AuthSession
 from zero_api.auth.srp import CognitoSrp
 from zero_api.core.exceptions import AuthenticationError
 
-# From the deployed bundle / recorded login traffic (login.md).
+# From the deployed bundle / recorded login traffic.
 _CLIENT_ID = "6hcbp28i4mvooqt0edcq5u284s"
 _POOL_ID = "eu-central-1_W7ZDh3Al1"
 
 _AUTHC_HEADERS = {
     "content-type": "application/x-amz-json-1.1",
-    "x-amz-user-agent": "aws-amplify/5.0.4 api/2.0",  # proven accepted by the proxy (waf_probe)
+    "x-amz-user-agent": "aws-amplify/5.0.4 api/2.0",  # proven accepted by the proxy
     "cache-control": "no-store",
 }
 
@@ -67,9 +65,9 @@ def http_login(http: httpx.Client, email: str, password: str) -> AuthSession:
 def http_refresh(http: httpx.Client, session: AuthSession) -> AuthSession:
     """Cheap single-call re-authentication from the session's refresh token.
 
-    Mimics the SPA's REFRESH_TOKEN_AUTH flow (recorded exchange, login.md
-    open question 6): no SRP round needed, and Cognito does NOT rotate the
-    refresh token — only the IdToken is re-saved (``__i``), ``__r`` stays valid.
+    Mimics the SPA's REFRESH_TOKEN_AUTH flow (recorded exchange): no SRP round
+    needed, and Cognito does NOT rotate the refresh token — only the IdToken is
+    re-saved (``__i``), ``__r`` stays valid.
     """
     refresh_token = session.cookies.get("__r")
     if not refresh_token:
@@ -106,9 +104,9 @@ def _authc(http: httpx.Client, target: str, payload: dict[str, Any]) -> dict[str
 
 
 def _authc_error(response: httpx.Response, body: Any) -> str:
-    # Loud failure path for an adaptive WAF (waf_probe.md open question 1).
+    # Loud failure path for an adaptive WAF.
     if any("x-amzn-waf" in name.lower() for name in response.headers):
-        return f"blocked by AWS WAF challenge (unexpected, see docs/explorations/waf_probe.md): {response.status_code}"
+        return f"blocked by AWS WAF challenge (unexpected): {response.status_code}"
     message = body.get("message", "") if isinstance(body, dict) else ""
     return f"Cognito auth failed: {response.status_code} {message}".strip()
 

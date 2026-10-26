@@ -1,5 +1,5 @@
 """2FA order-execution unlock (session TAN / app push) — the state machine
-behind the order screen, per docs/explorations/order_2fa.md.
+behind the order screen.
 
 The flow introduces no new tokens: it is server-side session state keyed by a
 short-lived auth handle. All bodies on these endpoints are text/plain literals.
@@ -45,7 +45,7 @@ class SessionTanApi:
         try:
             return AuthState(raw)
         except ValueError:
-            raise TwoFactorError(f"unknown 2FA auth state {raw!r} (order_2fa.md open question 2)") from None
+            raise TwoFactorError(f"unknown 2FA auth state {raw!r}") from None
 
     def abort(self, auth_handle: str) -> None:
         """Abort a pending push (what the UI does on dismiss)."""

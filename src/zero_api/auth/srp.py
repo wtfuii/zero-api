@@ -2,7 +2,7 @@
 
 Port of amazon-cognito-identity-js (AuthenticationHelper.js + DateHelper.js),
 cross-checked against the deployed amplify bundle on mein.finanzen-zero.net
-and pycognito's aws_srp.py; see docs/explorations/login.md (open question 1):
+and pycognito's aws_srp.py:
 
 - k = SHA256(bytes(padHex(N) + padHex(g)))
 - u = SHA256(bytes(padHex(A) + padHex(B)))

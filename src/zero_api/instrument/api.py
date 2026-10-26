@@ -16,7 +16,7 @@ class InstrumentApi:
 
     def search(self, query: str, *, size: int = 10) -> InstrumentSearchPage:
         """Typeahead instrument search by name, WKN or ISIN
-        (GET /api/instrumentsearch, see instrument.md).
+        (GET /api/instrumentsearch).
 
         ``query`` is free text as typed into the app's search box; ``size`` caps
         the returned hits (the SPA asks for 3 — the server-side cap is

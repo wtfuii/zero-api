@@ -12,12 +12,12 @@ class AuthenticationError(ZeroApiError):
 class TwoFactorError(ZeroApiError):
     """Order-execution 2FA (session TAN / app push) could not be completed,
     e.g. the push was declined/unknown state, timed out, or no single enrolled
-    device could be picked (see docs/explorations/order_2fa.md)."""
+    device could be picked."""
 
 
 class BrokerApiError(ZeroApiError):
-    """Broker answered non-2xx with its apiError body ({type:"apiError", ...},
-    see docs/explorations/order.md) — e.g. a rejected order."""
+    """Broker answered non-2xx with its apiError body ({type:"apiError", ...})
+    — e.g. a rejected order."""
 
     def __init__(self, status: int, message: str, error_code: str | None, errors: list[str]) -> None:
         self.status = status

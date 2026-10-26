@@ -1,6 +1,6 @@
 """Models for the watchlist.
 
-Shape of GET /api/wl — see docs/explorations/watchlist.md.
+Shape of GET /api/wl.
 ``extra="forbid"`` so silent schema drift by the broker fails loudly.
 """
 
