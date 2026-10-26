@@ -7,10 +7,11 @@
 
 <p align="center">
   <a href="https://github.com/wtfuii/zero-api/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/wtfuii/zero-api/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://pypi.org/project/zero-api/"><img alt="PyPI" src="https://img.shields.io/pypi/v/zero-api?logo=pypi&logoColor=white"></a>
   <a href="https://www.python.org/downloads/"><img alt="Python 3.13+" src="https://img.shields.io/badge/python-3.13%2B-3776AB?logo=python&logoColor=white"></a>
   <a href="https://mypy.readthedocs.io/en/stable/"><img alt="mypy: strict" src="https://img.shields.io/badge/mypy-strict-2A6DB2"></a>
   <a href="#development"><img alt="Tests: offline only" src="https://img.shields.io/badge/tests-offline%20only-success"></a>
-  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-yellow.svg"></a>
+  <a href="https://github.com/wtfuii/zero-api/blob/main/LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-yellow.svg"></a>
   <a href="#project-status"><img alt="Status: alpha" src="https://img.shields.io/badge/status-alpha-orange.svg"></a>
 </p>
 
@@ -103,12 +104,27 @@ run calls in a worker thread.
 
 ## Installation
 
-> **Status: alpha, version 0.1.0.** The package is not on PyPI yet; the release workflow is in
-> place. Install from source as shown below. Once the first release is published,
-> `uv add zero-api` / `pip install zero-api` will be the short path.
+```bash
+pip install zero-api
+```
 
-Clone and install the development environment (the commands below use
-[uv](https://docs.astral.sh/uv/); plain `pip` works too):
+or, with [uv](https://docs.astral.sh/uv/):
+
+```bash
+uv add zero-api
+```
+
+Python **3.13+** is required. The distribution is named `zero-api`; you import it as `zero_api`.
+`httpx` and `pydantic` are the only runtime dependencies and are installed with the package. The
+wheel ships a [`py.typed`](https://github.com/wtfuii/zero-api/blob/main/src/zero_api/py.typed)
+marker, so editors and mypy see the types.
+
+> **Alpha (0.1.0).** The API may still change between minor versions. Pin the version you depend on
+> (`zero-api==0.1.0`) until it stabilizes.
+
+### From source
+
+To work on the library itself, or to track unreleased changes:
 
 ```bash
 git clone https://github.com/wtfuii/zero-api.git
@@ -116,7 +132,7 @@ cd zero-api
 uv sync
 ```
 
-Use it from another project by adding the checkout as an editable dependency:
+Add that checkout to another project as an editable dependency:
 
 ```bash
 uv add --editable /path/to/zero-api
@@ -124,9 +140,7 @@ uv add --editable /path/to/zero-api
 python -m pip install -e /path/to/zero-api
 ```
 
-Inside the checkout, `uv run python your_script.py` uses the project environment. The distribution
-is named `zero-api`; you import it as `zero_api`. The package ships a
-[`py.typed`](src/zero_api/py.typed) marker, so editors and mypy see the types.
+Inside the checkout, `uv run python your_script.py` uses the project environment.
 
 ## Quick start
 
@@ -570,7 +584,8 @@ The suite replays **real, sanitized broker payloads** from `tests/<slice>/fixtur
 `httpx.MockTransport`. Do not replace them with hand-written approximations, and never add a test
 that calls the live broker.
 
-The release process is documented in [RELEASING.md](RELEASING.md).
+The release process is documented in
+[RELEASING.md](https://github.com/wtfuii/zero-api/blob/main/RELEASING.md).
 
 Project layout:
 
@@ -592,8 +607,8 @@ docs/explorations/   # endpoint notes and sanitized captures
 
 ## Live smoke test
 
-[live_smoke.py](scripts/live_smoke.py) is a developer tool that talks to the real broker. It is
-**not** part of the test suite.
+[live_smoke.py](https://github.com/wtfuii/zero-api/blob/main/scripts/live_smoke.py) is a developer
+tool that talks to the real broker. It is **not** part of the test suite.
 
 ```bash
 export ZERO_EMAIL="you@example.com"
@@ -624,7 +639,7 @@ commit. `captures/` and `docs/explorations/captures/` are gitignored for that re
 
 ## License
 
-[MIT](LICENSE) © 2026 Klaus Deja.
+[MIT](https://github.com/wtfuii/zero-api/blob/main/LICENSE) © 2026 Klaus Deja.
 
 This project is not affiliated with, endorsed by, or supported by Finanzen.net or Finanzen.net
 ZERO. Automating a broker account may violate its terms of service; you are responsible for how
