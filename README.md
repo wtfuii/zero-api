@@ -499,11 +499,9 @@ Other failures are intentionally **not** wrapped:
 
 ## Project status
 
-**Alpha (0.1.0).** All six slices are implemented and covered by an offline test suite, but the
-API is private and the library tracks it on a best-effort basis. Pin a commit or version if you
-depend on it, and re-run your integration tests after upgrading.
+**Alpha (0.1.0).**
 
-Known unverified corners, deliberately left loud instead of guessed:
+Known unverified corners, deliberately left out:
 
 - Instrument pages for ETFs, funds and derivatives were not all captured; the share shape is the
   reference. A `ValidationError` on a non-share instrument is a real report-worthy bug.
@@ -522,7 +520,6 @@ Known unverified corners, deliberately left loud instead of guessed:
   already exist. Check the order lists first.
 - **Sessions do not survive a process.** Cookies live only in memory; persist nothing unless you
   build that yourself and protect it accordingly.
-- **One client per account.** The session and `customerId` are per client instance.
 - **No async API.** Run the synchronous calls in a thread if you need them inside an event loop.
 - **No `close()` or `logout()`.** Pass your own `httpx.Client` if you need explicit lifetime
   management; discard the client to drop the session.
@@ -532,24 +529,6 @@ Known unverified corners, deliberately left loud instead of guessed:
   increments, price ticks, market hours and buying power against `Instrument` and
   `MoneyTransactionAccount` first.
 - **No sandbox.** Every authenticated call goes to the real broker.
-
-## FAQ
-
-**Do I need a browser or Playwright?** No. Login and every API call are pure HTTP. Playwright
-exists only in throwaway recorder scripts and is not a dependency.
-
-**Do I have to call a login method?** No. Construct the client and make an API call.
-
-**Where do I get an API key?** There isn't one. Authentication is email + password (Cognito SRP)
-and then session cookies.
-
-**Why does `place()` hang for a minute?** It is waiting for you to approve the 2FA push in the
-ZERO app. With several enrolled devices and no default, it raises instead of guessing.
-
-**Why did I get a `ValidationError`?** The broker returned a shape the library does not know.
-That is intentional. Check the endpoint and open an issue rather than catching and ignoring it.
-
-**Can I use this asynchronously?** Not directly. The client is synchronous; use a worker thread.
 
 ## Development
 
@@ -613,12 +592,9 @@ unless the buy is confirmed filled. Use `--help` for timeouts, device selection 
 Issues and pull requests are welcome. Before opening one:
 
 1. Run `uv run mypy .` and `uv run pytest`.
-2. For a new endpoint or field, capture real traffic first and record the findings in
-   [docs/explorations/](docs/explorations/) (see [AGENTS.md](AGENTS.md) for the exploration
-   workflow).
-3. Add or update the sanitized fixture in the slice's `tests/<slice>/fixtures/` and test against
+2. Add or update the sanitized fixture in the slice's `tests/<slice>/fixtures/` and test against
    it.
-4. Keep the vertical-slice structure: a slice owns its transport, models and client methods;
+3. Keep the vertical-slice structure: a slice owns its transport, models and client methods;
    shared HTTP/session code belongs in `core/`. Do not add a browser dependency to `src/`.
 
 Never paste cookies, IdTokens, account numbers, device serials or raw HAR files into an issue or
