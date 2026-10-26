@@ -40,6 +40,7 @@ def fixtures(load_fixture: Callable[[str, str], Any]) -> dict[str, bytes]:
         "/api/instrumentsearch?q=GB00BJVQC708": json.dumps(load_fixture("instrument", "instrument_search_isin")).encode(),
         "/api/instrumentsearch?q=MSCI World": json.dumps(load_fixture("instrument", "instrument_search_etf")).encode(),
         "/api/instrumentsearch?q=Bitcoin": json.dumps(load_fixture("instrument", "instrument_search_crypto")).encode(),
+        "/api/instrumentsearch?q=123": json.dumps(load_fixture("instrument", "instrument_search_digits")).encode(),
         "/extapis/findata/chart?period=OneYear&instruments=1330,345850,1330,814": json.dumps(load_fixture("instrument", "chart_one_year")).encode(),
         "/extapis/findata/chart?period=Maximum&instruments=1330,345850,1330,814": json.dumps(load_fixture("instrument", "chart_maximum")).encode(),
         "/extapis/findata/chart?period=OneYear&instruments=1330,10608388,1330,814": json.dumps(load_fixture("instrument", "chart_etf")).encode(),
@@ -175,6 +176,45 @@ class TestSearch:
         crypto = next(hit for hit in page.results if hit.type is InstrumentSearchType.CRYPTO)
         assert (crypto.isin, crypto.wkn, crypto.short_name) == ("XC000A2YY6Q6", "", "BTC")
         assert len(page.results) == 68
+
+    def test_stats_always_lists_all_five_buckets(self, fixtures: dict[str, bytes]) -> None:
+        """Live ``q=123&size=10`` (2026-10-26): three buckets are zero, but the
+        server still sends every bucket key."""
+        client = _client(fixtures, [])
+        page = client.instrument.search("123", size=10)
+
+        assert set(page.stats.hits) == set(InstrumentSearchBucket)
+        assert page.stats.hits[InstrumentSearchBucket.STOCK] == 1
+        assert page.stats.hits[InstrumentSearchBucket.ETF_ETC] == 0
+        assert page.stats.hits[InstrumentSearchBucket.FUND] == 0
+        assert page.stats.hits[InstrumentSearchBucket.DERIVATIVE] == 2539
+        assert page.stats.hits[InstrumentSearchBucket.CRYPTO] == 0
+
+    def test_size_caps_hits_per_bucket_not_the_whole_response(
+        self, fixtures: dict[str, bytes]
+    ) -> None:
+        """Live ``q=123&size=10`` (2026-10-26) returned 11 hits: 1 AKTIE plus
+        the full 10 DERIVAT, so the cap applies within each bucket."""
+        client = _client(fixtures, [])
+        page = client.instrument.search("123", size=10)
+
+        assert {hit.type for hit in page.results} == {
+            InstrumentSearchType.STOCK,
+            InstrumentSearchType.DERIVATIVE,
+        }
+        types = [hit.type for hit in page.results]
+        assert types.count(InstrumentSearchType.STOCK) == 1
+        assert types.count(InstrumentSearchType.DERIVATIVE) == 10
+        assert len(types) == 11  # one more than size: per bucket, not per response
+
+    def test_total_sums_buckets_when_some_are_zero(self, fixtures: dict[str, bytes]) -> None:
+        """Live ``q=123&size=10`` (2026-10-26): ``total`` sums all five buckets
+        even when three of them are zero."""
+        client = _client(fixtures, [])
+        page = client.instrument.search("123", size=10)
+
+        assert page.stats.total == 2540
+        assert page.stats.total == sum(page.stats.hits.values())
 
     def test_unknown_hit_type_fails(self, fixtures: dict[str, bytes]) -> None:
         mutated = dict(fixtures)

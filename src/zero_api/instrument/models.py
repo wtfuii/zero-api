@@ -185,12 +185,6 @@ class InstrumentSearchType(StrEnum):
 
 class InstrumentSearchBucket(StrEnum):
     """Keys of ``stats.hits`` — match counts per asset class.
-
-    Separate vocabulary from ``InstrumentSearchType``: ``ETF`` and ``ETC`` hits
-    are both counted under ``ETF_ETC``. Captured 2026-10-26 with
-    ``q=MSCI World&size=10`` (``ETF_ETC: 189`` while ten ``ETF`` hits were
-    returned) and ``q=Bitcoin&size=40`` (``ETF_ETC: 23`` = 22 ``ETC`` + 1
-    ``ETF``).
     """
 
     STOCK = "AKTIE"

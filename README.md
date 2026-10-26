@@ -532,14 +532,6 @@ Known unverified corners, deliberately left out:
   `previously_quoted`); the client types them but cannot place them.
 - Declined/expired 2FA states were never captured; unknown values raise `TwoFactorError`.
 - Position pagination has never been observed to kick in.
-- Search hit types (`ETF`/`ETC`) and `stats.hits` buckets (`ETF_ETC`) are two vocabularies; both
-  are typed, and unknown values fail loudly. `INDEX`, commodity and currency hits have never
-  appeared in search results.
-- Instrument masters were captured **once per class** (2026-10-26), so the single `Instrument`
-  model knows the 50-key shape and the observed nullability, but not whether a field is always
-  null for a class. A genuinely new key still fails validation; a known Optional field accepts
-  both null and a value. Only `OneYear` charts were captured for non-shares, and a populated
-  `quote` has still never been seen.
 
 ## Limitations and gotchas
 
