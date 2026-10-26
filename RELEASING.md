@@ -65,7 +65,7 @@ No `PYPI_API_TOKEN` or other publishing secret is needed.
 
 ### 4. License
 
-There is no `LICENSE` file in the repository yet. The workflow does not block on this, but a PyPI release is a public distribution: choose and add a license before the first public release.
+The project is MIT-licensed. `LICENSE` holds the text and `pyproject.toml` declares it via the SPDX expression (`license = "MIT"`, `license-files = ["LICENSE"]`), so the wheel ships the file under `dist-info/licenses/` and PyPI displays the license. Nothing to do per release unless the copyright holder changes.
 
 ## Cut a release
 

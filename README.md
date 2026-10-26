@@ -409,8 +409,8 @@ tests/                 # offline tests + sanitized fixtures
 
 ## License
 
-No license has been chosen for this project yet. Add a `LICENSE` file before publishing a release or accepting contributions — PyPI releases are public distributions.
+[MIT](https://github.com/wtfuii/zero-api/blob/main/LICENSE) © 2026 Klaus Deja. Use it freely, including in closed-source projects; the software comes with no warranty.
 
 ## Disclaimer
 
-This project is not affiliated with, endorsed by, or supported by Finanzen.net or Finanzen.net ZERO. It exists for personal, educational use. Automating a broker account may violate their terms of service; you are responsible for how you use it.
+This project is not affiliated with, endorsed by, or supported by Finanzen.net or Finanzen.net ZERO. It exists for personal, educational use. Automating a broker account may violate their terms of service; you are responsible for how you use it. Nothing here is financial advice, and any orders you place are at your own risk.
