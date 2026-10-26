@@ -1,5 +1,5 @@
 [project]
-name = "zero-api"
+name = "finanzen-zero-api"
 version = "0.1.0"
 description = "Unofficial Python client for Finanzen.net ZERO"
 readme = "README.md"
@@ -35,6 +35,12 @@ Releases = "https://github.com/wtfuii/zero-api/releases"
 [build-system]
 requires = ["uv_build>=0.11.5,<0.12.0"]
 build-backend = "uv_build"
+
+# The PyPI distribution is `finanzen-zero-api` (the name `zero-api` was not
+# available), but the import package stays `zero_api`. Without this, uv_build
+# would look for `src/finanzen_zero_api/` and the build would fail.
+[tool.uv.build-backend]
+module-name = "zero_api"
 
 [tool.mypy]
 strict = true

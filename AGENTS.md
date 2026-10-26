@@ -4,6 +4,8 @@
 
 `zero-api` — a Python library (not an app) providing a client for the German broker **Finanzen.net ZERO**. There is no official API: the library mimics the broker's private HTTP endpoints over plain `httpx`. It never drives a browser at runtime — no Playwright dependency. Login page: `https://mein.finanzen-zero.net` — start explorations and traffic capture there.
 
+The repository is `zero-api` and the import package is `zero_api`, but the **PyPI distribution is `finanzen-zero-api`** (the name `zero-api` was not available on PyPI). `pyproject.toml` keeps them aligned with `[tool.uv.build-backend] module-name = "zero_api"` — do not remove that setting, or `uv_build` will look for `src/finanzen_zero_api/`.
+
 ## Non-negotiable conventions
 
 - **Strong typing everywhere**: full annotations, `mypy --strict` must pass; no untyped public API. Use Pydantic models or dataclasses for request/response shapes, never bare dicts.

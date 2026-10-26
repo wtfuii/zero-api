@@ -31,7 +31,7 @@ concurrency:
 
 env:
   RELEASE_TAG: ${{ github.event.release.tag_name || inputs.tag }}
-  PACKAGE_NAME: zero-api
+  PACKAGE_NAME: finanzen-zero-api
 
 jobs:
   build:
@@ -96,7 +96,7 @@ jobs:
           PROJECT_VERSION: ${{ steps.version.outputs.version }}
         run: |
           set -euo pipefail
-          venv="$RUNNER_TEMP/zero-api-smoke"
+          venv="$RUNNER_TEMP/finanzen-zero-api-smoke"
           uv venv "$venv" --python 3.13
           uv pip install --python "$venv/bin/python" dist/*.whl
           SMOKE_VERSION="$PROJECT_VERSION" "$venv/bin/python" - <<'PY'
@@ -107,11 +107,11 @@ jobs:
           import zero_api
 
           expected = os.environ["SMOKE_VERSION"]
-          actual = version("zero-api")
+          actual = version("finanzen-zero-api")
           assert actual == expected, (actual, expected)
           assert zero_api.ZeroClient.__name__ == "ZeroClient"
           assert (files("zero_api") / "py.typed").is_file()
-          print(f"wheel smoke test passed for zero-api {actual}")
+          print(f"wheel smoke test passed for finanzen-zero-api {actual}")
           PY
 
       - name: Upload distributions
@@ -132,7 +132,7 @@ jobs:
     timeout-minutes: 10
     environment:
       name: pypi
-      url: https://pypi.org/p/zero-api
+      url: https://pypi.org/p/finanzen-zero-api
     permissions:
       actions: read
       contents: read
@@ -160,7 +160,7 @@ jobs:
     timeout-minutes: 10
     environment:
       name: testpypi
-      url: https://test.pypi.org/p/zero-api
+      url: https://test.pypi.org/p/finanzen-zero-api
     permissions:
       actions: read
       contents: read

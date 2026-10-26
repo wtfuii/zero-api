@@ -7,7 +7,7 @@
 
 <p align="center">
   <a href="https://github.com/wtfuii/zero-api/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/wtfuii/zero-api/actions/workflows/ci.yml/badge.svg"></a>
-  <a href="https://pypi.org/project/zero-api/"><img alt="PyPI" src="https://img.shields.io/pypi/v/zero-api?logo=pypi&logoColor=white"></a>
+  <a href="https://pypi.org/project/finanzen-zero-api/"><img alt="PyPI" src="https://img.shields.io/pypi/v/finanzen-zero-api?logo=pypi&logoColor=white"></a>
   <a href="https://www.python.org/downloads/"><img alt="Python 3.13+" src="https://img.shields.io/badge/python-3.13%2B-3776AB?logo=python&logoColor=white"></a>
   <a href="https://mypy.readthedocs.io/en/stable/"><img alt="mypy: strict" src="https://img.shields.io/badge/mypy-strict-2A6DB2"></a>
   <a href="#development"><img alt="Tests: offline only" src="https://img.shields.io/badge/tests-offline%20only-success"></a>
@@ -104,22 +104,23 @@ run calls in a worker thread.
 ## Installation
 
 ```bash
-pip install zero-api
+pip install finanzen-zero-api
 ```
 
 or, with [uv](https://docs.astral.sh/uv/):
 
 ```bash
-uv add zero-api
+uv add finanzen-zero-api
 ```
 
-Python **3.13+** is required. The distribution is named `zero-api`; you import it as `zero_api`.
-`httpx` and `pydantic` are the only runtime dependencies and are installed with the package. The
-wheel ships a [`py.typed`](https://github.com/wtfuii/zero-api/blob/main/src/zero_api/py.typed)
-marker, so editors and mypy see the types.
+Python **3.13+** is required. The PyPI distribution is named `finanzen-zero-api` (the name
+`zero-api` was not available on PyPI); you import it as `zero_api`. `httpx` and `pydantic` are the
+only runtime dependencies and are installed with the package. The wheel ships a
+[`py.typed`](https://github.com/wtfuii/zero-api/blob/main/src/zero_api/py.typed) marker, so editors
+and mypy see the types.
 
 > **Alpha (0.1.0).** The API may still change between minor versions. Pin the version you depend on
-> (`zero-api==0.1.0`) until it stabilizes.
+> (`finanzen-zero-api==0.1.0`) until it stabilizes.
 
 ### From source
 

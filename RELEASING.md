@@ -2,6 +2,8 @@
 
 Releases are built and published by the [`Release` workflow](.github/workflows/release.yml). Publishing a GitHub Release triggers it; a manual dispatch can publish the same artifacts to TestPyPI first.
 
+The **PyPI distribution name is `finanzen-zero-api`**: the name `zero-api` was not available on PyPI. The repository and the import package are unchanged (`zero-api` on GitHub, `import zero_api`), and `pyproject.toml` maps the two with `[tool.uv.build-backend] module-name = "zero_api"`. The PyPI project name must always match `project.name` exactly.
+
 | Trigger | Publishes to | Attaches assets to the GitHub Release |
 |---|---|---|
 | GitHub Release published | PyPI | Yes |
@@ -34,13 +36,13 @@ The project does not exist on PyPI yet, so add a **pending trusted publisher** b
 
 | Field | Value |
 |---|---|
-| PyPI project name | `zero-api` |
+| PyPI project name | `finanzen-zero-api` |
 | Owner | `wtfuii` |
 | Repository name | `zero-api` |
 | Workflow name | `release.yml` |
 | Environment name | `pypi` |
 
-The workflow name is the file name only, not the full path. If the project name is claimed by someone else before the first upload, the release cannot use `zero-api` without renaming the distribution.
+The workflow name is the file name only, not the full path. The project name must equal `project.name` in `pyproject.toml`; a pending publisher registered under a different name fails with `Non-user identities cannot create new projects`. A pending publisher does not reserve the name — if someone else registers `finanzen-zero-api` before the first upload, it is invalidated.
 
 ### 2. TestPyPI trusted publisher (optional)
 
@@ -125,7 +127,7 @@ To install a TestPyPI build, pull dependencies from PyPI as well:
 uv pip install \
   --index-url https://test.pypi.org/simple/ \
   --extra-index-url https://pypi.org/simple/ \
-  zero-api==0.1.0
+  finanzen-zero-api==0.1.0
 ```
 
 ## Recovery
@@ -139,12 +141,24 @@ uv pip install \
   ```
 
 - **Version already exists on PyPI:** PyPI does not allow replacing files. Bump the version, commit, tag, and publish a new release. `skip-existing` only makes retries skip files that were already uploaded; it does not permit changing the contents of a published version.
+- **A release failed before anything was published, and the fix changes packaging:** the workflow checks out the **tag**, not `main`, so committing is not enough. Move the tag onto the fixed commit and re-run:
+
+  ```bash
+  git add -A && git commit -m "Publish as finanzen-zero-api"
+  git push origin main
+  git tag -f -a v0.1.0 -m "zero-api v0.1.0"
+  git push origin v0.1.0 --force
+  gh run rerun <run-id> --failed
+  ```
+
+  Moving a tag is only safe while the version is unpublished on every index; once PyPI has accepted the files, bump instead.
 
 ## Troubleshooting
 
 | Symptom | Check |
 |---|---|
-| `invalid-publisher` / OIDC error | Owner, repository, workflow name (`release.yml`), and environment must match the PyPI pending publisher exactly. |
+| `invalid-publisher` / OIDC error | Owner, repository, workflow name (`release.yml`), and environment must match the PyPI pending publisher exactly. Also check the project name: `finanzen-zero-api`, not `zero-api`. |
+| `Non-user identities cannot create new projects` | The pending publisher's project name and `project.name` in `pyproject.toml` differ. |
 | Workflow waiting for deployment | Approve the `pypi` environment deployment in the Actions tab. |
 | Tag/version mismatch | Run `uv version --bump patch`, commit the lockfile too, push, delete the old tag, and create a new tag. Do not move a tag that has already been released. |
 | Build job passes, publish job fails | The build artifact is still available for 7 days; re-run the publish job after fixing the trusted publisher or approval. |
