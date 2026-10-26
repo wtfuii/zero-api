@@ -94,13 +94,6 @@ print(client.account.get().buying_power)
 | **Network access to `mein.finanzen-zero.net`** | That is where every endpoint lives. There is no sandbox or test environment. |
 | **`httpx` and `pydantic`** | Installed automatically as the only runtime dependencies. |
 
-**Not required:** a browser, Selenium/Playwright, a headless Chromium, an AWS WAF cookie, or an
-API token. **Not supported:** asynchronous clients, multiple accounts in one client, or non-email
-login methods (SSO/social).
-
-This is a synchronous library built on `httpx.Client`. If your application is `asyncio`-based,
-run calls in a worker thread.
-
 ## Installation
 
 ```bash
