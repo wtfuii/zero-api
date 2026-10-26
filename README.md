@@ -362,16 +362,28 @@ as `BrokerApiError`). Behavior for an ISIN that is already on the list (add) or 
 
 | Method | Returns | Notes |
 |---|---|---|
-| `list(status="Open", *, page=0, size=1000)` | `OrdersPage` | `status` is a wire string: `"Open"`, `"Canceled"`, `"Filled"` observed. |
+| `list(status="Open", *, page=0, size=1000)` | `OrdersPage` | `status` is the history tab: `"Open"`, `"Canceled"` or `"Filled"`. |
 | `place(order, *, device=None)` | `Order` | Runs 2FA, verify, ex-ante document, then places the order. |
 | `cancel(order_id, *, device=None)` | `Order` | Uses the string `order_id`, not the numeric `id`. |
 
 `OrdersPage` has `.list` and `.has_next`. The default page size of 1000 covers most accounts; if
 `has_next` is true, request the next page explicitly.
 
-`Order.status` is a plain string. Observed values include `Created`, `Open`,
-`Open_CreatedCancel`, `Filled`, `Canceled`, `Rejected`, `Expired` and their partial-fill
-variants; treat unknown values as opaque rather than assuming an exhaustive enum.
+`Order.status` is an `OrderStatus` enum — compare it to enum members such as
+`OrderStatus.FILLED`. The values you will normally see:
+
+| Status | Meaning |
+|---|---|
+| `Created` | Accepted by the broker, not yet working at the venue |
+| `Open` | Working at the venue |
+| `Filled` / `PartiallyFilled_Filled` | Executed (the latter after a partial fill) |
+| `Canceled` | Canceled |
+| `Rejected` | Rejected by the broker or venue |
+| `Expired` | Expired without executing |
+| `Open_CreatedCancel`, … | Cancellation requested / in progress |
+
+There are also `PartiallyFilled` variants with the same cancellation suffixes; `OrderStatus` lists
+the full set.
 
 #### Placing an order
 

@@ -8,11 +8,12 @@ from typing import Any
 
 import httpx
 import pytest
+from pydantic import ValidationError
 
 from zero_api import ZeroClient
 from zero_api.auth.models import AuthSession
 from zero_api.core.exceptions import BrokerApiError
-from zero_api.ordering.models import ExecType, OrderExecType
+from zero_api.ordering.models import ExecType, OrderExecType, OrderStatus
 
 _SESSION = AuthSession(cookies={"__i": "fake-token", "XSRF-TOKEN": "fake-xsrf"}, customer_id="1234567")
 
@@ -51,7 +52,7 @@ class TestList:
         assert page.has_next is False
         order = page.list[0]
         assert order.order_id == "GBRd5d801c6318847aea56587e4deb8afdb"
-        assert order.status == "Open"
+        assert order.status is OrderStatus.OPEN
         assert order.exec_type == "limit"
         assert order.limit_price == Decimal("2.000000000000")
         assert order.quantity == Decimal("1.000000000000")
@@ -59,6 +60,26 @@ class TestList:
         assert order.venue_name == "gettex"
         assert order.short_name == "Helios Towers"
         assert order.valid_to_date == datetime(2026, 11, 30, tzinfo=UTC)
+
+    @pytest.mark.parametrize("status", list(OrderStatus))
+    def test_accepts_every_status_from_spa_enum(
+        self,
+        status: OrderStatus,
+        load_fixture: Callable[[str, str], Any],
+    ) -> None:
+        # Only a handful of statuses appear in recorded traffic; the complete
+        # set comes from the SPA's own order-status enum in the captured bundle.
+        payload = load_fixture("ordering", "orders_open")
+        payload["list"][0]["status"] = status.value
+        client = _client(lambda r: httpx.Response(200, json=payload))
+        assert client.orders.list().list[0].status is status
+
+    def test_unknown_status_fails_loudly(self, load_fixture: Callable[[str, str], Any]) -> None:
+        payload = load_fixture("ordering", "orders_open")
+        payload["list"][0]["status"] = "SomeStatusTheBrokerAddedLater"
+        client = _client(lambda r: httpx.Response(200, json=payload))
+        with pytest.raises(ValidationError, match="SomeStatusTheBrokerAddedLater"):
+            client.orders.list()
 
     @pytest.mark.parametrize(
         "exec_type",
@@ -224,7 +245,7 @@ class TestCancel:
             return httpx.Response(200, content=_fixture_body(load_fixture, "order_cancelled"))
 
         order = _client(handler).orders.cancel("GBRd5d801c6318847aea56587e4deb8afdb")
-        assert order.status == "Open_CreatedCancel"
+        assert order.status is OrderStatus.OPEN_CREATED_CANCEL
         assert order.cancel_date is None
 
     def test_sends_order_id_body(self, load_fixture: Callable[[str, str], Any]) -> None:

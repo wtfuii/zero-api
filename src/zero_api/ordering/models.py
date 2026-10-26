@@ -47,6 +47,50 @@ class OrderExecType(StrEnum):
     PREVIOUSLY_QUOTED = "previously_quoted"
 
 
+class OrderStatus(StrEnum):
+    """Wire values of ``Order.status`` (the SPA's own order-status enum).
+
+    The captured main bundle's order-status enum lists exactly these 27 values.
+    Base states are ``Created``, ``Sent``, ``Pending`` and ``Open``; the compound
+    values append a cancellation phase to the current base state
+    (``_CreatedCancel`` = cancellation requested, ``_SentCancel`` = cancellation
+    sent, ``_PendingCancel`` = preliminarily canceled) and are opaque wire values,
+    not something to parse. ``PartiallyFilled`` is the partially-executed base
+    state with the same suffixes; terminal states are ``Filled``, ``Canceled``,
+    ``Rejected`` and ``Expired``.
+
+    A status outside this enum fails pydantic validation (loud broker drift).
+    """
+
+    CREATED = "Created"
+    CREATED_CREATED_CANCEL = "Created_CreatedCancel"
+    CREATED_SENT_CANCEL = "Created_SentCancel"
+    CREATED_PENDING_CANCEL = "Created_PendingCancel"
+    SENT = "Sent"
+    SENT_CREATED_CANCEL = "Sent_CreatedCancel"
+    SENT_SENT_CANCEL = "Sent_SentCancel"
+    SENT_PENDING_CANCEL = "Sent_PendingCancel"
+    PENDING = "Pending"
+    PENDING_CREATED_CANCEL = "Pending_CreatedCancel"
+    PENDING_SENT_CANCEL = "Pending_SentCancel"
+    PENDING_PENDING_CANCEL = "Pending_PendingCancel"
+    OPEN = "Open"
+    OPEN_CREATED_CANCEL = "Open_CreatedCancel"
+    OPEN_SENT_CANCEL = "Open_SentCancel"
+    OPEN_PENDING_CANCEL = "Open_PendingCancel"
+    CANCELED = "Canceled"
+    REJECTED = "Rejected"
+    EXPIRED = "Expired"
+    PARTIALLY_FILLED = "PartiallyFilled"
+    PARTIALLY_FILLED_CREATED_CANCEL = "PartiallyFilled_CreatedCancel"
+    PARTIALLY_FILLED_SENT_CANCEL = "PartiallyFilled_SentCancel"
+    PARTIALLY_FILLED_PENDING_CANCEL = "PartiallyFilled_PendingCancel"
+    PARTIALLY_FILLED_CANCELED = "PartiallyFilled_Canceled"
+    PARTIALLY_FILLED_EXPIRED = "PartiallyFilled_Expired"
+    PARTIALLY_FILLED_FILLED = "PartiallyFilled_Filled"
+    FILLED = "Filled"
+
+
 class OrderRequest(BaseModel):
     """Payload for POST /api/trading/order (identical to the /verify precheck).
 
@@ -116,7 +160,7 @@ class Order(BaseModel):
     instrument_with_leverage: bool
     direction: str
     exec_type: OrderExecType
-    status: str  # observed: Created, Open, Open_CreatedCancel; full enum unverified
+    status: OrderStatus
     quantity: Decimal
     executed_quantity: Decimal
     open_quantity: Decimal
