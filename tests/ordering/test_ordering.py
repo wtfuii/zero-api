@@ -12,7 +12,7 @@ import pytest
 from zero_api import ZeroClient
 from zero_api.auth.models import AuthSession
 from zero_api.core.exceptions import BrokerApiError
-from zero_api.ordering.models import ExecType
+from zero_api.ordering.models import ExecType, OrderExecType
 
 _SESSION = AuthSession(cookies={"__i": "fake-token", "XSRF-TOKEN": "fake-xsrf"}, customer_id="1234567")
 
@@ -59,6 +59,38 @@ class TestList:
         assert order.venue_name == "gettex"
         assert order.short_name == "Helios Towers"
         assert order.valid_to_date == datetime(2026, 11, 30, tzinfo=UTC)
+
+    @pytest.mark.parametrize(
+        "exec_type",
+        [
+            OrderExecType.SAVINGS,
+            OrderExecType.FRACTION,
+            OrderExecType.STOP,
+            OrderExecType.PREVIOUSLY_QUOTED,
+        ],
+    )
+    def test_accepts_order_types_only_seen_in_history(
+        self,
+        exec_type: OrderExecType,
+        load_fixture: Callable[[str, str], Any],
+    ) -> None:
+        # The recorded open-order payload can only exercise ``limit``; the
+        # history-only values come from the SPA's own execType label map.
+        payload = load_fixture("ordering", "orders_open")
+        payload["list"][0]["execType"] = exec_type.value
+        client = _client(lambda r: httpx.Response(200, json=payload))
+        order = client.orders.list().list[0]
+        assert order.exec_type is exec_type
+
+    def test_accepts_order_without_destination_mic(
+        self, load_fixture: Callable[[str, str], Any]
+    ) -> None:
+        # History entries (e.g. savings-plan executions) can have no venue.
+        payload = load_fixture("ordering", "orders_open")
+        payload["list"][0]["destinationMIC"] = None
+        client = _client(lambda r: httpx.Response(200, json=payload))
+        order = client.orders.list().list[0]
+        assert order.destination_mic is None
 
     def test_sends_status_and_paging(self, load_fixture: Callable[[str, str], Any]) -> None:
         seen: dict[str, str] = {}

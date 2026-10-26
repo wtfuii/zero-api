@@ -227,6 +227,8 @@ client.watchlist.remove_from_watchlist("DE0007030009")
 | `place(order, *, device=None)` | `Order` | Verify, generate the ex-ante cost document, place the order. Returns it with status `"Created"`. |
 | `cancel(order_id, *, device=None)` | `Order` | Cancel by the string `order_id`. Returns the order in a transition state (e.g. `"Open_CreatedCancel"`). |
 
+`Order.exec_type` is an `OrderExecType`. Besides the placeable types it also covers history entries the broker creates on its own: `savings` (Sparplan execution), `fraction` (fractional order), `previously_quoted` (RFQ) and `stop`. Those are response-only; `OrderRequest` still accepts just `ExecType` values.
+
 `OrderRequest` describes the order:
 
 ```python
@@ -348,6 +350,21 @@ Run a single test:
 ```bash
 uv run pytest tests/ordering/test_ordering.py -k place
 ```
+
+### Live smoke test
+
+`scripts/live_smoke.py` exercises the public client against the real broker. By default it runs only read-only checks: login/account, instrument search (ISIN/WKN/name), master data, detail, chart, positions, watchlist read plus add/remove, open/canceled/filled orders, and the read-only 2FA state probes. It never places an order unless you opt in.
+
+Pass `--trade-isin` for a **real-money round-trip**: the script places a market **BUY of exactly 1 unit**, polls the Open/Canceled/Filled order lists until the buy is confirmed filled, and only then places a market **SELL of exactly 1 unit**. Preflight aborts unless the unit is affordable, allowed by the instrument's quantity rules, and the selected venue is within its reported trading hours. If an order does not fill within `--fill-timeout`, the script tries to cancel it and does not continue. When the 2FA session is locked it sends a push; if several devices are enrolled it asks which one to use (or pass `--device`). Every trade is confirmed interactively unless `--yes` is given.
+
+```bash
+ZERO_EMAIL=you@example.com ZERO_PASSWORD=secret \
+  uv run python scripts/live_smoke.py --trade-isin <ISIN>
+```
+
+If `ZERO_PASSWORD` is unset and the command has a TTY, it prompts. By default the script also round-trips the watchlist with an instrument that is not already on it and removes it again in a `finally` block; `--skip-mutations` leaves the watchlist untouched. Use `--isin` to pick another instrument for the read-only checks, `--watch-isin` for another watchlist target, `--mic` to choose a venue, and `-v` for tracebacks. Other trade controls: `--device`, `--yes`, `--fill-timeout`, `--poll-interval`, `--auth-timeout`.
+
+Exit code `0` means every executed check passed, `1` means a failure (or an unclean watchlist cleanup), and `2` means a configuration error. **The live round-trip spends real money and both orders incur fees.** It is a developer tool only; the test suite itself remains fully offline.
 
 Conventions worth knowing:
 

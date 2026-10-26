@@ -24,6 +24,30 @@ class ExecType(StrEnum):
     STOP_LIMIT = "stoplimit"  # limit_price + stop_price
 
 
+class OrderExecType(StrEnum):
+    """Wire values of ``execType`` in order responses.
+
+    Order history also contains types the client does not place itself:
+    ``savings`` (Sparplan execution), ``fraction`` (fractional order),
+    ``previously_quoted`` (RFQ) and plain ``stop``. The full set is the SPA
+    bundle's label map for ``execType`` (``market:"Markt", stop:"Stop",
+    stoplimit:"Stop Limit", limit:"Limit", savings:"Sparplan",
+    fraction:"Bruchstücke", oco:"OCO", tsl:"TSL", previously_quoted:"RFQ"``),
+    so responses are typed separately from :class:`ExecType` and
+    ``OrderRequest`` keeps rejecting the placement-incompatible values.
+    """
+
+    MARKET = "market"
+    LIMIT = "limit"
+    TSL = "tsl"
+    OCO = "oco"
+    STOP_LIMIT = "stoplimit"
+    STOP = "stop"
+    SAVINGS = "savings"
+    FRACTION = "fraction"
+    PREVIOUSLY_QUOTED = "previously_quoted"
+
+
 class OrderRequest(BaseModel):
     """Payload for POST /api/trading/order (identical to the /verify precheck).
 
@@ -92,7 +116,7 @@ class Order(BaseModel):
     instrument_type: str
     instrument_with_leverage: bool
     direction: str
-    exec_type: ExecType
+    exec_type: OrderExecType
     status: str  # observed: Created, Open, Open_CreatedCancel; full enum unverified
     quantity: Decimal
     executed_quantity: Decimal
@@ -114,7 +138,7 @@ class Order(BaseModel):
     cancel_date: datetime | None = None
     reject_reason: str | None = None
     error_code: str | None = None
-    destination_mic: str = Field(alias="destinationMIC")
+    destination_mic: str | None = Field(default=None, alias="destinationMIC")
     venue_name: str | None = None  # only in list responses (e.g. "gettex")
     last_backend_update: datetime | None = None
     created: datetime | None = None
