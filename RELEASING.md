@@ -1,6 +1,6 @@
 # Releasing zero-api
 
-Releases are built and published by the [`Release` workflow](.github/workflows/release.yml). Publishing a GitHub Release triggers it; a manual dispatch can publish the same artifacts to TestPyPI first.
+Releases are built and published by the [`Release` workflow](.github/workflows/release.yaml). Publishing a GitHub Release triggers it; a manual dispatch can publish the same artifacts to TestPyPI first.
 
 The **PyPI distribution name is `finanzen-zero-api`**: the name `zero-api` was not available on PyPI. The repository and the import package are unchanged (`zero-api` on GitHub, `import zero_api`), and `pyproject.toml` maps the two with `[tool.uv.build-backend] module-name = "zero_api"`. The PyPI project name must always match `project.name` exactly.
 
@@ -39,7 +39,7 @@ The project does not exist on PyPI yet, so add a **pending trusted publisher** b
 | PyPI project name | `finanzen-zero-api` |
 | Owner | `wtfuii` |
 | Repository name | `zero-api` |
-| Workflow name | `release.yml` |
+| Workflow name | `release.yaml` |
 | Environment name | `pypi` |
 
 The workflow name is the file name only, not the full path. The project name must equal `project.name` in `pyproject.toml`; a pending publisher registered under a different name fails with `Non-user identities cannot create new projects`. A pending publisher does not reserve the name — if someone else registers `finanzen-zero-api` before the first upload, it is invalidated.
@@ -110,8 +110,8 @@ If the tag does not match `project.version`, the workflow fails before building 
 Validate the packaging and trusted-publisher setup without touching PyPI:
 
 ```bash
-gh workflow run release.yml --ref main -f tag=v0.1.0 -f target=testpypi
-gh run list --workflow=release.yml --limit=1
+gh workflow run release.yaml --ref main -f tag=v0.1.0 -f target=testpypi
+gh run list --workflow=release.yaml --limit=1
 ```
 
 Notes:
@@ -137,7 +137,7 @@ uv pip install \
 - **Manual PyPI publish:** if the release event did not trigger the workflow (for example, the release was created before this workflow existed), run:
 
   ```bash
-  gh workflow run release.yml --ref main -f tag=v0.1.0 -f target=pypi
+  gh workflow run release.yaml --ref main -f tag=v0.1.0 -f target=pypi
   ```
 
 - **Version already exists on PyPI:** PyPI does not allow replacing files. Bump the version, commit, tag, and publish a new release. `skip-existing` only makes retries skip files that were already uploaded; it does not permit changing the contents of a published version.
@@ -157,7 +157,7 @@ uv pip install \
 
 | Symptom | Check |
 |---|---|
-| `invalid-publisher` / OIDC error | Owner, repository, workflow name (`release.yml`), and environment must match the PyPI pending publisher exactly. Also check the project name: `finanzen-zero-api`, not `zero-api`. |
+| `invalid-publisher` / OIDC error | Owner, repository, workflow name (`release.yaml`), and environment must match the PyPI pending publisher exactly. Also check the project name: `finanzen-zero-api`, not `zero-api`. |
 | `Non-user identities cannot create new projects` | The pending publisher's project name and `project.name` in `pyproject.toml` differ. |
 | Workflow waiting for deployment | Approve the `pypi` environment deployment in the Actions tab. |
 | Tag/version mismatch | Run `uv version --bump patch`, commit the lockfile too, push, delete the old tag, and create a new tag. Do not move a tag that has already been released. |
