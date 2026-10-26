@@ -71,7 +71,11 @@ class TestHttpLoginFlow:
         init_payload = json.loads(init_body)
         assert init_payload["AuthFlow"] == "USER_SRP_AUTH"
         assert init_payload["AuthParameters"]["USERNAME"] == "probe@example.com"
-        assert 767 <= len(init_payload["AuthParameters"]["SRP_A"]) <= 768  # 3072-bit SRP_A
+        srp_a = init_payload["AuthParameters"]["SRP_A"]
+        # A = g^a mod N lives in the 3072-bit group, but its hex form can lose
+        # leading nibbles (roughly 1 in 16 logins is 767 digits, 1 in 256 is 766).
+        assert 1 <= len(srp_a) <= 768
+        assert int(srp_a, 16) > 0
 
         _p, resp_headers, resp_body = recorder.calls[1]
         assert resp_headers["x-amz-target"] == "AWSCognitoIdentityProviderService.RespondToAuthChallenge"

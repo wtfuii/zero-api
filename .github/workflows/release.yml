@@ -1,0 +1,203 @@
+# Publishes a GitHub Release to PyPI via OIDC trusted publishing and attaches
+# the built distributions to the GitHub Release.
+#
+# One-time PyPI/TestPyPI and GitHub environment setup: see RELEASING.md.
+name: Release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing git tag to release (for example v0.1.0)"
+        required: true
+        type: string
+      target:
+        description: "Package index to publish to"
+        required: true
+        default: testpypi
+        type: choice
+        options:
+          - testpypi
+          - pypi
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.event.release.tag_name || inputs.tag }}
+  cancel-in-progress: false
+
+env:
+  RELEASE_TAG: ${{ github.event.release.tag_name || inputs.tag }}
+  PACKAGE_NAME: zero-api
+
+jobs:
+  build:
+    name: Verify and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out release tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          version: "0.11.5"
+          # No shared dependency cache in a publishing workflow: a poisoned
+          # cache could otherwise change what gets uploaded to PyPI.
+          enable-cache: false
+
+      - name: Install dependencies
+        run: uv sync --locked
+
+      - name: Verify tag matches project version
+        id: version
+        env:
+          TAG: ${{ env.RELEASE_TAG }}
+        run: |
+          set -euo pipefail
+          case "$TAG" in
+            v*) ;;
+            *)
+              echo "::error::Release tag '$TAG' must start with 'v' (for example v0.1.0)."
+              exit 1
+              ;;
+          esac
+          tag_version="${TAG#v}"
+          project_version="$(uv version --short)"
+          if [[ "$tag_version" != "$project_version" ]]; then
+            echo "::error::Release tag '$TAG' does not match pyproject.toml version '$project_version'."
+            echo "::error::Run 'uv version --bump patch', commit, and retag before releasing."
+            exit 1
+          fi
+          echo "version=$project_version" >> "$GITHUB_OUTPUT"
+          echo "Releasing $PACKAGE_NAME $project_version" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Type check
+        run: uv run mypy .
+
+      - name: Run tests
+        run: uv run pytest
+
+      - name: Build distributions
+        run: uv build
+
+      - name: Validate package metadata
+        run: uvx twine check --strict dist/*
+
+      - name: Smoke-test the built wheel
+        env:
+          PROJECT_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          venv="$RUNNER_TEMP/zero-api-smoke"
+          uv venv "$venv" --python 3.13
+          uv pip install --python "$venv/bin/python" dist/*.whl
+          SMOKE_VERSION="$PROJECT_VERSION" "$venv/bin/python" - <<'PY'
+          import os
+          from importlib.metadata import version
+          from importlib.resources import files
+
+          import zero_api
+
+          expected = os.environ["SMOKE_VERSION"]
+          actual = version("zero-api")
+          assert actual == expected, (actual, expected)
+          assert zero_api.ZeroClient.__name__ == "ZeroClient"
+          assert (files("zero_api") / "py.typed").is_file()
+          print(f"wheel smoke test passed for zero-api {actual}")
+          PY
+
+      - name: Upload distributions
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: dist
+          path: |
+            dist/*.whl
+            dist/*.tar.gz
+          if-no-files-found: error
+          retention-days: 7
+
+  publish_pypi:
+    name: Publish to PyPI
+    needs: build
+    if: github.event_name == 'release' || inputs.target == 'pypi'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: pypi
+      url: https://pypi.org/p/zero-api
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+    steps:
+      - name: Download distributions
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: dist
+          path: dist
+
+      - name: Publish distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
+        with:
+          packages-dir: dist
+          print-hash: true
+          # Keep retries safe when the release job fails after a partial upload.
+          skip-existing: true
+
+  publish_testpypi:
+    name: Publish to TestPyPI
+    needs: build
+    if: github.event_name == 'workflow_dispatch' && inputs.target == 'testpypi'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/zero-api
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+    steps:
+      - name: Download distributions
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: dist
+          path: dist
+
+      - name: Publish distributions to TestPyPI
+        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          packages-dir: dist
+          print-hash: true
+          skip-existing: true
+
+  attach_release_assets:
+    name: Attach distributions to GitHub Release
+    needs: publish_pypi
+    if: github.event_name == 'release' && needs.publish_pypi.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - name: Download distributions
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: dist
+          path: dist
+
+      - name: Upload distributions to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "$TAG" dist/* --repo "$GITHUB_REPOSITORY" --clobber

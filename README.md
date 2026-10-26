@@ -6,7 +6,8 @@ There is no official API. This library mimics the broker's private HTTP endpoint
 
 ![Python](https://img.shields.io/badge/python-3.13%2B-blue)
 ![Typing](https://img.shields.io/badge/mypy-strict-success)
-![Tests](https://img.shields.io/badge/tests-passing-success)
+[![CI](https://github.com/wtfuii/zero-api/actions/workflows/ci.yml/badge.svg)](https://github.com/wtfuii/zero-api/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/zero-api)](https://pypi.org/project/zero-api/)
 
 > **Unofficial and unsupported.** Endpoints are private and can change without notice. Use at your own risk, and never against an account you are not allowed to automate.
 
@@ -35,7 +36,19 @@ There is no official API. This library mimics the broker's private HTTP endpoint
 
 ## Installation
 
-The package is not published on PyPI. Install it from source:
+Releases are published to [PyPI](https://pypi.org/project/zero-api/). Once the first release is out, install it with uv:
+
+```bash
+uv add zero-api
+```
+
+or with pip:
+
+```bash
+pip install zero-api
+```
+
+Until then, install it from source:
 
 ```bash
 git clone <repository-url> zero-api
@@ -372,6 +385,12 @@ Conventions worth knowing:
 - Tests mirror the slices under `tests/<slice>/` and replay **recorded, sanitized broker payloads** from `tests/<slice>/fixtures/`; nothing hits the broker.
 - `uv run mypy .` runs in strict mode over `src/` and `tests/`.
 
+## Releasing
+
+Releases are published by the [`Release` workflow](https://github.com/wtfuii/zero-api/blob/main/.github/workflows/release.yml) when a GitHub Release is published. The tag must be `v<version>` and must exactly match `project.version` in `pyproject.toml`. The workflow runs strict mypy and the offline test suite, builds the sdist and wheel, validates their metadata, smoke-tests the wheel, publishes to PyPI with OIDC trusted publishing, and attaches the distributions to the GitHub Release.
+
+See [RELEASING.md](https://github.com/wtfuii/zero-api/blob/main/RELEASING.md) for the one-time PyPI trusted-publisher setup and the release checklist.
+
 ## Project layout
 
 ```
@@ -390,7 +409,7 @@ tests/                 # offline tests + sanitized fixtures
 
 ## License
 
-No license has been chosen for this project yet. Add a `LICENSE` file before distributing or accepting contributions.
+No license has been chosen for this project yet. Add a `LICENSE` file before publishing a release or accepting contributions — PyPI releases are public distributions.
 
 ## Disclaimer
 
