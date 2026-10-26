@@ -1,0 +1,106 @@
+{
+  "isin": "IE00B4L5Y983",
+  "wkn": "A0RPWH",
+  "shortName": null,
+  "longName": "iShares Core MSCI World UCITS ETF USD (Acc)",
+  "symbol": null,
+  "type": "ETF",
+  "optionType": null,
+  "basisinformationen": "https://api.fundinfo.com/document/7a27c44e0baaf4838c907da39a76b94d_130609/PRP_DE_de_IE00B4L5Y983_YES_2026-09-03.pdf",
+  "jahresbericht": "https://api.fundinfo.com/document/15b4daae60c8c209622aa08dc07fc251_11177217/AR_DE_de_IE00B4L5Y983_YES_2024-06-30.pdf",
+  "halbjahresbericht": "",
+  "verkaufsprospekt": "https://api.fundinfo.com/document/94242f8a7dcf05efdfb2725ddef6fef9_8029542/PR_DE_de_IE00B4L5Y983_YES_2026-03-31.pdf",
+  "leverage": false,
+  "complex": false,
+  "notiz": "STUECK",
+  "underlyingIsin": null,
+  "underlying": null,
+  "sparplan": true,
+  "priceScale": 2,
+  "qtyScale": 0,
+  "minQty": 1.0,
+  "maxAmount": null,
+  "qtyIncr": 1.0,
+  "priceIncr": 0.01,
+  "fractionalTrading": true,
+  "weekendTrading": true,
+  "finnetShortName": null,
+  "finnetName": null,
+  "tradable": "OPEN",
+  "minimumOrderValue": 0.01,
+  "lowTradingThreshold": 500.0,
+  "lowTradingThresholdQuantity": 0.0,
+  "quoteCurrencyCode": "EUR",
+  "marketName": "gettex",
+  "isOTC": false,
+  "tradingVenues": [
+    {
+      "tradingVenueName": "gettex",
+      "micCode": "MUNC",
+      "tradingHoursStart": "07:30:00",
+      "tradingHoursStop": "23:00:00",
+      "fractionalTrading": true,
+      "weekendTrading": true,
+      "savingsPlan": true,
+      "defaultVenue": true,
+      "tradingFees": {
+        "minimumQuantitySurcharge": 1.0,
+        "fractionalSurcharge": 1.0,
+        "feePct": 0.0,
+        "savingsPlanFeePct": 0.0,
+        "tradingVenueFee": 0.0
+      }
+    },
+    {
+      "tradingVenueName": "Tradegate",
+      "micCode": "TGAT",
+      "tradingHoursStart": "07:30:00",
+      "tradingHoursStop": "22:00:00",
+      "fractionalTrading": false,
+      "weekendTrading": false,
+      "savingsPlan": false,
+      "defaultVenue": false,
+      "tradingFees": {
+        "minimumQuantitySurcharge": 1.0,
+        "fractionalSurcharge": 1.0,
+        "feePct": 0.0,
+        "savingsPlanFeePct": 0.0,
+        "tradingVenueFee": 2.0
+      }
+    }
+  ],
+  "knockedOutFlag": false,
+  "quantityUnitCode": "STUECK",
+  "turboKnockOutTestRequired": false,
+  "tradingHoursStartTime": "07:30",
+  "tradingHoursStopTime": "23:00",
+  "emittentShortCode": "Blac",
+  "nominal": 1,
+  "endfaellig": false,
+  "iconUrl": "https://mein.finanzen-zero.net/assets/icons/_default/ic_etf_default.svg",
+  "disabledExecTypes": [],
+  "historicQuotes": [
+    {
+      "id": 1319444531,
+      "bid": 129.485,
+      "ask": 129.65,
+      "ts": "2026-10-23T20:59:27.931Z",
+      "isin": "IE00B4L5Y983"
+    }
+  ],
+  "quote": null,
+  "ranking": {
+    "rankTotal": 1,
+    "trend": 0
+  },
+  "sentiment": {
+    "buy": 61,
+    "sell": 39
+  },
+  "tradingFees": {
+    "minimumQuantitySurcharge": 1.0,
+    "fractionalSurcharge": 1.0,
+    "feePct": 0.0,
+    "feeSavingsplanPct": 0.0
+  }
+}

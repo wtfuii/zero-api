@@ -567,7 +567,7 @@ class SmokeTest:
             )
         return TradePlan(
             isin=isin,
-            name=instrument.short_name,
+            name=instrument.short_name or instrument.long_name,
             instrument_type=instrument.type,
             venue_name=venue.trading_venue_name,
             mic_code=venue.mic_code,

@@ -1,0 +1,86 @@
+{
+  "isin": "DE000UBS0JQ8",
+  "wkn": "UBS0JQ",
+  "shortName": "EUR UBS Express Step Down MSCI World 4.5% Decrement Linked to MSCI World 4.5% Decrement EUR 02/32",
+  "longName": "EUR UBS Express Step Down MSCI World 4.5% Decrement Linked to MSCI World 4.5% Decrement EUR 02/32",
+  "symbol": null,
+  "type": "DERIVAT",
+  "optionType": "CALL",
+  "basisinformationen": "https://easykid-pro.ariva-services.de/product/generate_pdf",
+  "jahresbericht": null,
+  "halbjahresbericht": null,
+  "verkaufsprospekt": null,
+  "leverage": false,
+  "complex": true,
+  "notiz": "STUECK",
+  "underlyingIsin": "GB00BSBGRG79",
+  "underlying": "MSCI World 4.5% Decrement EUR Index",
+  "sparplan": false,
+  "priceScale": 3,
+  "qtyScale": 0,
+  "minQty": 1.0,
+  "maxAmount": null,
+  "qtyIncr": 1.0,
+  "priceIncr": 0.01,
+  "fractionalTrading": false,
+  "weekendTrading": false,
+  "finnetShortName": null,
+  "finnetName": null,
+  "tradable": "OPEN",
+  "minimumOrderValue": 0.0,
+  "lowTradingThreshold": 0.0,
+  "lowTradingThresholdQuantity": 500.0,
+  "quoteCurrencyCode": "EUR",
+  "marketName": "UBS",
+  "isOTC": true,
+  "tradingVenues": [
+    {
+      "tradingVenueName": "UBS",
+      "micCode": "CATS",
+      "tradingHoursStart": "08:00:00",
+      "tradingHoursStop": "22:00:00",
+      "fractionalTrading": false,
+      "weekendTrading": false,
+      "savingsPlan": false,
+      "defaultVenue": true,
+      "tradingFees": {
+        "minimumQuantitySurcharge": 1.0,
+        "fractionalSurcharge": 1.0,
+        "feePct": 0.0,
+        "savingsPlanFeePct": 0.0,
+        "tradingVenueFee": 0.0
+      }
+    }
+  ],
+  "nominal": 1,
+  "quantityUnitCode": "STUECK",
+  "emittentShortCode": "UBS ",
+  "turboKnockOutTestRequired": false,
+  "tradingHoursStartTime": "08:00",
+  "tradingHoursStopTime": "22:00",
+  "endfaellig": false,
+  "knockedOutFlag": false,
+  "iconUrl": null,
+  "disabledExecTypes": [
+    "oco",
+    "tsl"
+  ],
+  "historicQuotes": [
+    {
+      "id": 1319362830,
+      "bid": 1029.69,
+      "ask": 1039.69,
+      "ts": "2026-10-23T19:59:48.880Z",
+      "isin": "DE000UBS0JQ8"
+    }
+  ],
+  "quote": null,
+  "ranking": null,
+  "sentiment": null,
+  "tradingFees": {
+    "minimumQuantitySurcharge": 1.0,
+    "fractionalSurcharge": 1.0,
+    "feePct": 0.0,
+    "feeSavingsplanPct": 0.0
+  }
+}

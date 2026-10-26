@@ -19,9 +19,10 @@ class InstrumentApi:
         (GET /api/instrumentsearch).
 
         ``query`` is free text as typed into the app's search box; ``size`` caps
-        the returned hits (the SPA asks for 3 — the server-side cap is
-        unverified). ``page.stats.hits`` still counts every match per asset
-        class, so a capped result set never hides how many hits exist.
+        the hits returned *per asset-class bucket*, not the whole response (a
+        live ``size=10`` query returned 21 hits over three buckets; the SPA asks
+        for 3). ``page.stats.hits`` still counts every match per bucket, so a
+        capped result set never hides how many hits exist.
         """
         data = self._http.get_json(
             "/api/instrumentsearch", params={"q": query, "size": str(size)}
@@ -30,7 +31,10 @@ class InstrumentApi:
 
     def get(self, isin: str) -> Instrument:
         """The instrument master record (GET /api/instrument/{isin}).
-        Trading rules, venues, per-venue fees and the latest quotes."""
+
+        Returns the single ``Instrument`` model; ``instrument.type`` identifies
+        the class (an ETC master reports ``ETF``).
+        """
         return Instrument.model_validate(self._http.get_json(f"/api/instrument/{isin}"))
 
     def detail(self, isin: str) -> InstrumentDetail:

@@ -78,7 +78,7 @@ print(client.account.get().buying_power)
 | Status | Slice | What you get |
 |---|---|---|
 | ✅ | `client.account` | Cash account (Verrechnungskonto): buying/transfer power, IBAN, saldo, closing period. |
-| ✅ | `client.instrument` | Typeahead search, master data with venues and fees, market/fundamental detail, chart series. |
+| ✅ | `client.instrument` | Typeahead search, master data (one model, typed `type`), market/fundamental detail, chart series. |
 | ✅ | `client.portfolio` | Current depot positions with quantity, average entry quote and latest quote. |
 | ✅ | `client.watchlist` | List, add and remove watchlist entries by ISIN. |
 | ✅ | `client.orders` | List orders by status, place market/limit/stop-limit/trailing-stop/OCO orders, cancel them. |
@@ -236,25 +236,30 @@ If you need to exclude an available credit line, use `buying_power_without_credi
 | Method | Returns | Notes |
 |---|---|---|
 | `search(query, *, size=10)` | `InstrumentSearchPage` | Free text: name, WKN (German security ID) or ISIN. |
-| `get(isin)` | `Instrument` | Master record: venue list, fees, lot sizes, trading state. |
-| `detail(isin)` | `InstrumentDetail` | Price, 52-week range, volume, profile, dividends. |
+| `get(isin)` | `Instrument` | Master record: `type` plus trading state, venues and fees. |
+| `detail(isin)` | `InstrumentDetail` | Market data; one model with optional fields (the wire has no class discriminator). |
 | `chart(isin, period=ChartPeriod.ONE_YEAR)` | `list[ChartBar]` | One series; internally fetches `detail()` first. |
 
 ```python
-from zero_api.instrument.models import ChartPeriod
+from zero_api.instrument.models import ChartPeriod, InstrumentType
 
 page = client.instrument.search("Rheinmetall", size=5)
-print(page.stats.total)  # every match, including those beyond size
+print(page.stats.total)  # every match, including those beyond the per-bucket cap
 for asset_type, count in page.stats.hits.items():
     print(asset_type.value, count)
 for hit in page.results:
     print(hit.isin, hit.wkn, hit.short_name, hit.type)
 
 instrument = client.instrument.get("DE0007030009")
+assert instrument.type is InstrumentType.STOCK
 venue = next(v for v in instrument.trading_venues if v.default_venue)
 print(instrument.short_name, instrument.tradable)          # e.g. "OPEN"
 print(venue.mic_code, venue.trading_hours_start, venue.trading_hours_stop)
 print(instrument.min_qty, instrument.qty_incr, instrument.price_incr)
+
+deriv = client.instrument.get("DE000UBS0JQ8")
+if deriv.type is InstrumentType.DERIVATIVE:
+    print(deriv.underlying, deriv.option_type, deriv.disabled_exec_types)
 
 bars = client.instrument.chart(instrument.isin, ChartPeriod.ONE_MONTH)
 print(bars[-1].date, bars[-1].close)
@@ -262,18 +267,38 @@ print(bars[-1].date, bars[-1].close)
 
 Things worth knowing:
 
-- `search()` returns at most `size` hits, but `page.stats.hits` still counts **every** match, so a
-  capped result set never hides how many hits exist. The server-side cap is unverified.
+- `search()` returns at most `size` hits **per asset-class bucket**, not per call: a live
+  `size=10` search returned 21 hits over three buckets. `page.stats.hits` still counts **every**
+  match, so a capped result set never hides how many hits exist.
+- A search hit's `type` and the `stats.hits` keys use **different vocabularies**. An ETF hit is
+  `ETF` and an exchange-traded commodity is `ETC`, while the stats aggregate both as `ETF_ETC`.
+  `InstrumentSearchType` models `hit.type`; `InstrumentSearchBucket` models the `stats.hits` keys.
+  An unknown value fails validation rather than being coerced into a neighbouring class.
+- `get()` always returns the single `Instrument` model. `instrument.type` is an `InstrumentType`
+  (`AKTIE`/`ETF`/`FONDS`/`DERIVAT`/`KRYPTO`); an ETC's *master* reports `ETF`, even though its
+  search hit says `ETC` (`InstrumentSearchType` is the six-value search-hit vocabulary). Fields
+  that can be null for some class are Optional: crypto `wkn`, ETF/fund `short_name`/`symbol`,
+  non-derivative `underlying`/`option_type`, fund/derivative/crypto `ranking`/`sentiment`. This is
+  one model rather than a union because all five master captures share the same 50-key payload;
+  per-class narrowing would over-fit a single capture per class.
 - `chart()` makes **two** GETs (detail for `tkIdentifier`, then the chart). If you already have
   the detail, that is one redundant request.
-- `ChartBar` only guarantees `date` and `close`. `open_`, `high`, `low` and `volume` are optional
-  and vary by period; `date` is the broker's display string, not a parsed date. The trailing
-  underscore on `open_` avoids shadowing the Python builtin.
-- `InstrumentDetail.symbol` is actually the WKN, despite the field name.
+- `ChartBar` only guarantees `date` and `close`. `open_`, `high`, `low` and `volume` are optional:
+  derivative rows carry `High`/`Low` but no `Open`/`Volume`, crypto rows only `Date`/`Close`, and
+  fund rows occasionally omit `Volume`. `date` is the broker's display string, not a parsed date.
+  The trailing underscore on `open_` avoids shadowing the Python builtin.
+- `InstrumentDetail.symbol` is actually the WKN, despite the field name; crypto details omit it.
+- `InstrumentDetail` is one model with optional fields because the detail wire has **no reliable
+  class discriminator**: `instrumentType` is 1 for both shares and the captured derivative, 4 for
+  ETF/fund/crypto and 5 for ETC. Derivatives omit `first`, `revenue`, `w52Close`, `w52High`,
+  `w52low` and `volume`; crypto also omits the datetimes, `symbol` and `wpkn`, and adds `finId` and
+  `tkIdentifierIntraday`. Use `get()` when you need the class.
 - `mic_code` is the venue's ISO 10383 Market Identifier Code. Use a value from
   `instrument.trading_venues`, not a guessed exchange name.
-- `instrument.quote`, `disabled_exec_types` and some derivative fields are only partially observed.
-  Treat unexpected `ValidationError`s as a signal that the broker changed shape.
+- `instrument.quote` is null in every capture; its populated shape is still unseen.
+  `disabled_exec_types` was empty for shares/ETF/fund/crypto and carried `["oco", "tsl"]` on the
+  captured derivative. Treat unexpected `ValidationError`s as a signal that the broker changed
+  shape.
 
 ### Portfolio
 
@@ -503,13 +528,18 @@ Other failures are intentionally **not** wrapped:
 
 Known unverified corners, deliberately left out:
 
-- Instrument pages for ETFs, funds and derivatives were not all captured; the share shape is the
-  reference. A `ValidationError` on a non-share instrument is a real report-worthy bug.
 - Some execution types appear only in order history (`savings`, `fraction`, `stop`,
   `previously_quoted`); the client types them but cannot place them.
 - Declined/expired 2FA states were never captured; unknown values raise `TwoFactorError`.
 - Position pagination has never been observed to kick in.
-- The `stats.hits` bucket vocabulary in search is the five asset classes seen so far.
+- Search hit types (`ETF`/`ETC`) and `stats.hits` buckets (`ETF_ETC`) are two vocabularies; both
+  are typed, and unknown values fail loudly. `INDEX`, commodity and currency hits have never
+  appeared in search results.
+- Instrument masters were captured **once per class** (2026-10-26), so the single `Instrument`
+  model knows the 50-key shape and the observed nullability, but not whether a field is always
+  null for a class. A genuinely new key still fails validation; a known Optional field accepts
+  both null and a value. Only `OneYear` charts were captured for non-shares, and a populated
+  `quote` has still never been seen.
 
 ## Limitations and gotchas
 

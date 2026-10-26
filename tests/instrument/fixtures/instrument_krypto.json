@@ -1,0 +1,83 @@
+{
+  "isin": "XC000A2YY6Q6",
+  "wkn": null,
+  "shortName": "BTC",
+  "longName": "Bitcoin",
+  "symbol": "BTCEUR",
+  "type": "KRYPTO",
+  "optionType": null,
+  "basisinformationen": null,
+  "jahresbericht": null,
+  "halbjahresbericht": null,
+  "verkaufsprospekt": null,
+  "leverage": false,
+  "complex": false,
+  "notiz": "STUECK",
+  "underlyingIsin": null,
+  "underlying": null,
+  "sparplan": true,
+  "priceScale": 2,
+  "qtyScale": 8,
+  "minQty": 1e-08,
+  "maxAmount": 100000.0,
+  "qtyIncr": 1e-08,
+  "priceIncr": 0.01,
+  "fractionalTrading": false,
+  "weekendTrading": false,
+  "finnetShortName": null,
+  "finnetName": null,
+  "tradable": "OPEN",
+  "minimumOrderValue": 0.01,
+  "lowTradingThreshold": 500.0,
+  "lowTradingThresholdQuantity": 0.0,
+  "quoteCurrencyCode": "EUR",
+  "marketName": "BestEx Krypto",
+  "isOTC": false,
+  "tradingVenues": [
+    {
+      "tradingVenueName": "BestEx Krypto",
+      "micCode": "BAAD",
+      "tradingHoursStart": "00:00:00",
+      "tradingHoursStop": "23:59:00",
+      "fractionalTrading": false,
+      "weekendTrading": false,
+      "savingsPlan": true,
+      "defaultVenue": true,
+      "tradingFees": {
+        "minimumQuantitySurcharge": 1.0,
+        "fractionalSurcharge": 1.0,
+        "feePct": 1.0,
+        "savingsPlanFeePct": 0.0,
+        "tradingVenueFee": 0.0
+      }
+    }
+  ],
+  "quantityUnitCode": "STUECK",
+  "emittentShortCode": null,
+  "turboKnockOutTestRequired": false,
+  "tradingHoursStartTime": "00:00",
+  "tradingHoursStopTime": "23:59",
+  "knockedOutFlag": false,
+  "nominal": 1,
+  "endfaellig": false,
+  "iconUrl": null,
+  "disabledExecTypes": [],
+  "historicQuotes": [
+    {
+      "id": 1319885220,
+      "bid": 71702.584691,
+      "ask": 71742.983581,
+      "ts": "2026-10-25T22:16:56.085Z",
+      "isin": "XC000A2YY6Q6"
+    }
+  ],
+  "quote": null,
+  "ranking": null,
+  "sentiment": null,
+  "tradingFees": {
+    "minimumQuantitySurcharge": 1.0,
+    "fractionalSurcharge": 1.0,
+    "feePct": 1.0,
+    "feeSavingsplanPct": 0.0
+  }
+}

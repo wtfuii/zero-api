@@ -1,0 +1,83 @@
+{
+  "isin": "IE00BYX5P602",
+  "wkn": "A2JE55",
+  "shortName": null,
+  "longName": "Fidelity UCITS II ICAV - Fidelity MSCI World Index Fund P Euro Hedged ACC",
+  "symbol": null,
+  "type": "FONDS",
+  "optionType": null,
+  "basisinformationen": "https://api.fundinfo.com/document/08fb6e714aad251499f13c43b7aea00a_304971/PRP_DE_de_IE00BYX5P602_YES_2026-04-30.pdf",
+  "jahresbericht": "https://api.fundinfo.com/document/dfc855aee4c1d706590a65813eb97101_5374764/AR_DE_en_IE00BYX5P602_YES_2026-01-31.pdf",
+  "halbjahresbericht": "https://api.fundinfo.com/document/c48100c856f01372e400b304a27767d6_3054541/SAR_DE_en_IE00BYX5P602_YES_2026-07-31.pdf",
+  "verkaufsprospekt": "https://api.fundinfo.com/document/c8db192998ec58e5c3c7b65d47627cb1_7296572/PR_DE_de_IE00BYX5P602_YES_2024-10-16.pdf",
+  "leverage": false,
+  "complex": false,
+  "notiz": "STUECK",
+  "underlyingIsin": null,
+  "underlying": null,
+  "sparplan": false,
+  "priceScale": 3,
+  "qtyScale": 0,
+  "minQty": 1.0,
+  "maxAmount": null,
+  "qtyIncr": 1.0,
+  "priceIncr": 0.01,
+  "fractionalTrading": false,
+  "weekendTrading": false,
+  "finnetShortName": null,
+  "finnetName": null,
+  "tradable": "OPEN",
+  "minimumOrderValue": 0.01,
+  "lowTradingThreshold": 500.0,
+  "lowTradingThresholdQuantity": 0.0,
+  "quoteCurrencyCode": "EUR",
+  "marketName": "gettex",
+  "isOTC": false,
+  "tradingVenues": [
+    {
+      "tradingVenueName": "gettex",
+      "micCode": "MUNC",
+      "tradingHoursStart": "07:30:00",
+      "tradingHoursStop": "23:00:00",
+      "fractionalTrading": false,
+      "weekendTrading": false,
+      "savingsPlan": false,
+      "defaultVenue": true,
+      "tradingFees": {
+        "minimumQuantitySurcharge": 1.0,
+        "fractionalSurcharge": 1.0,
+        "feePct": 0.0,
+        "savingsPlanFeePct": 0.0,
+        "tradingVenueFee": 0.0
+      }
+    }
+  ],
+  "quantityUnitCode": "STUECK",
+  "emittentShortCode": null,
+  "turboKnockOutTestRequired": false,
+  "tradingHoursStartTime": "07:30",
+  "tradingHoursStopTime": "23:00",
+  "knockedOutFlag": false,
+  "nominal": 1,
+  "endfaellig": false,
+  "iconUrl": "https://mein.finanzen-zero.net/assets/icons/_default/ic_fonds_default.svg",
+  "disabledExecTypes": [],
+  "historicQuotes": [
+    {
+      "id": 1319264687,
+      "bid": 11.814,
+      "ask": 12.055,
+      "ts": "2026-10-23T20:57:19.585Z",
+      "isin": "IE00BYX5P602"
+    }
+  ],
+  "quote": null,
+  "ranking": null,
+  "sentiment": null,
+  "tradingFees": {
+    "minimumQuantitySurcharge": 1.0,
+    "fractionalSurcharge": 1.0,
+    "feePct": 0.0,
+    "feeSavingsplanPct": 0.0
+  }
+}

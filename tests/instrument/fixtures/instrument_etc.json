@@ -1,0 +1,106 @@
+{
+  "isin": "GB00BLD4ZL17",
+  "wkn": "A3GPMN",
+  "shortName": null,
+  "longName": "CoinShares Bitcoin ETP ETC",
+  "symbol": null,
+  "type": "ETF",
+  "optionType": null,
+  "basisinformationen": "https://api.fundinfo.com/document/bd017bd1226229464c958dc34bdd0dcc_117084/PRP_DE_de_GB00BLD4ZL17_YES_2026-03-18.pdf",
+  "jahresbericht": "",
+  "halbjahresbericht": "",
+  "verkaufsprospekt": "https://api.fundinfo.com/document/67869e5a190f40f7d1239d8f5e5f4e6f_1203208/PR_DE_en_GB00BLD4ZL17_YES_2021-04-23.pdf",
+  "leverage": false,
+  "complex": true,
+  "notiz": "STUECK",
+  "underlyingIsin": null,
+  "underlying": null,
+  "sparplan": true,
+  "priceScale": 2,
+  "qtyScale": 0,
+  "minQty": 1.0,
+  "maxAmount": null,
+  "qtyIncr": 1.0,
+  "priceIncr": 0.01,
+  "fractionalTrading": true,
+  "weekendTrading": true,
+  "finnetShortName": null,
+  "finnetName": null,
+  "tradable": "OPEN",
+  "minimumOrderValue": 0.01,
+  "lowTradingThreshold": 500.0,
+  "lowTradingThresholdQuantity": 0.0,
+  "quoteCurrencyCode": "EUR",
+  "marketName": "gettex",
+  "isOTC": false,
+  "tradingVenues": [
+    {
+      "tradingVenueName": "gettex",
+      "micCode": "MUNC",
+      "tradingHoursStart": "07:30:00",
+      "tradingHoursStop": "23:00:00",
+      "fractionalTrading": true,
+      "weekendTrading": true,
+      "savingsPlan": true,
+      "defaultVenue": true,
+      "tradingFees": {
+        "minimumQuantitySurcharge": 1.0,
+        "fractionalSurcharge": 1.0,
+        "feePct": 0.0,
+        "savingsPlanFeePct": 0.0,
+        "tradingVenueFee": 0.0
+      }
+    },
+    {
+      "tradingVenueName": "Tradegate",
+      "micCode": "TGAT",
+      "tradingHoursStart": "07:30:00",
+      "tradingHoursStop": "22:00:00",
+      "fractionalTrading": false,
+      "weekendTrading": false,
+      "savingsPlan": false,
+      "defaultVenue": false,
+      "tradingFees": {
+        "minimumQuantitySurcharge": 1.0,
+        "fractionalSurcharge": 1.0,
+        "feePct": 0.0,
+        "savingsPlanFeePct": 0.0,
+        "tradingVenueFee": 2.0
+      }
+    }
+  ],
+  "quantityUnitCode": "STUECK",
+  "emittentShortCode": "Coin",
+  "turboKnockOutTestRequired": false,
+  "tradingHoursStartTime": "07:30",
+  "tradingHoursStopTime": "23:00",
+  "knockedOutFlag": false,
+  "nominal": 1,
+  "endfaellig": false,
+  "iconUrl": "https://mein.finanzen-zero.net/assets/icons/_partner/coinshares.svg",
+  "disabledExecTypes": [],
+  "historicQuotes": [
+    {
+      "id": 1319316034,
+      "bid": 69.645,
+      "ask": 70.195,
+      "ts": "2026-10-23T20:59:37.109Z",
+      "isin": "GB00BLD4ZL17"
+    }
+  ],
+  "quote": null,
+  "ranking": {
+    "rankTotal": 69,
+    "trend": 1
+  },
+  "sentiment": {
+    "buy": 35,
+    "sell": 65
+  },
+  "tradingFees": {
+    "minimumQuantitySurcharge": 1.0,
+    "fractionalSurcharge": 1.0,
+    "feePct": 0.0,
+    "feeSavingsplanPct": 0.0
+  }
+}

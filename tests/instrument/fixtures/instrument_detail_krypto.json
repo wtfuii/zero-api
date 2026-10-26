@@ -1,0 +1,23 @@
+{
+  "name": "Bitcoin",
+  "isin": "XC000A2YY6Q6",
+  "finId": "676",
+  "high": 72092.90788911497,
+  "last": 71585.17406297973,
+  "low": 70676.81482946117,
+  "netChange": 377.538091039722,
+  "percent": 0.53019326633522,
+  "prevDay": 71207.63597194,
+  "w52High": 99745.03259047188,
+  "w52low": 50951.95405583356,
+  "instrumentType": 4,
+  "currency": "EUR",
+  "date": "26.10.2026",
+  "exchange": "CXR",
+  "pushIdentifier": "Y0401000000F123457",
+  "time": "18:30:00",
+  "tkIdentifier": "300011,676,,",
+  "tkIdentifierIntraday": "300012,676,,",
+  "branches": [],
+  "dividends": []
+}
