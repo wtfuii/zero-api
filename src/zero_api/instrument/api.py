@@ -1,12 +1,32 @@
 """Instrument slice: instrument master record, detail data and chart series."""
 
 from zero_api.core.http import AppHttp
-from zero_api.instrument.models import ChartBar, ChartPeriod, Instrument, InstrumentDetail
+from zero_api.instrument.models import (
+    ChartBar,
+    ChartPeriod,
+    Instrument,
+    InstrumentDetail,
+    InstrumentSearchPage,
+)
 
 
 class InstrumentApi:
     def __init__(self, http: AppHttp) -> None:
         self._http = http
+
+    def search(self, query: str, *, size: int = 10) -> InstrumentSearchPage:
+        """Typeahead instrument search by name, WKN or ISIN
+        (GET /api/instrumentsearch, see instrument.md).
+
+        ``query`` is free text as typed into the app's search box; ``size`` caps
+        the returned hits (the SPA asks for 3 — the server-side cap is
+        unverified). ``page.stats.hits`` still counts every match per asset
+        class, so a capped result set never hides how many hits exist.
+        """
+        data = self._http.get_json(
+            "/api/instrumentsearch", params={"q": query, "size": str(size)}
+        )
+        return InstrumentSearchPage.model_validate(data)
 
     def get(self, isin: str) -> Instrument:
         """The instrument master record (GET /api/instrument/{isin}).

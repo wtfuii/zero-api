@@ -1,0 +1,26 @@
+{
+  "stats": {
+    "took": 1,
+    "hits": {
+      "AKTIE": 1,
+      "ETF_ETC": 0,
+      "FONDS": 0,
+      "DERIVAT": 0,
+      "KRYPTO": 0
+    }
+  },
+  "results": [
+    {
+      "isin": "GB00BJVQC708",
+      "wkn": "A2PTUX",
+      "longName": "Helios Towers PLC Registered Shs",
+      "shortName": "Helios Towers",
+      "type": "AKTIE",
+      "tradableBusiness": true,
+      "weekendTrading": false,
+      "sparplan": true,
+      "fractional": true,
+      "isFeatured": false
+    }
+  ]
+}

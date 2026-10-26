@@ -138,6 +138,60 @@ class Instrument(BaseModel):
     trading_fees: _MasterTradingFees
 
 
+class InstrumentType(StrEnum):
+    """Asset classes as they appear in a search hit's ``type`` and as the
+    ``stats.hits`` keys — the five values the search endpoint enumerates."""
+
+    STOCK = "AKTIE"
+    ETF_ETC = "ETF_ETC"
+    FUND = "FONDS"
+    DERIVATIVE = "DERIVAT"
+    CRYPTO = "KRYPTO"
+
+
+class InstrumentSearchResult(BaseModel):
+    """One typeahead hit (GET /api/instrumentsearch) — enough to open the
+    instrument, chart it, add it to the watchlist or start an order."""
+
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, extra="forbid")
+
+    isin: str
+    wkn: str
+    long_name: str
+    short_name: str
+    type: InstrumentType
+    tradable_business: bool
+    weekend_trading: bool
+    sparplan: bool
+    fractional: bool
+    is_featured: bool
+
+
+class InstrumentSearchStats(BaseModel):
+    """Search metadata: latency and match counts per asset class.
+
+    ``hits`` counts every match; ``results`` only holds the first ``size``.
+    """
+
+    model_config = ConfigDict(populate_by_name=True, extra="forbid")
+
+    took: int
+    hits: dict[InstrumentType, int]
+
+    @property
+    def total(self) -> int:
+        return sum(self.hits.values())
+
+
+class InstrumentSearchPage(BaseModel):
+    """Envelope of a search response: the hits plus the per-class counts."""
+
+    model_config = ConfigDict(populate_by_name=True, extra="forbid")
+
+    stats: InstrumentSearchStats
+    results: list[InstrumentSearchResult]
+
+
 class Dividend(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, extra="forbid")
 

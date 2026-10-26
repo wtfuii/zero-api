@@ -1,0 +1,50 @@
+{
+  "stats": {
+    "took": 1,
+    "hits": {
+      "AKTIE": 4,
+      "ETF_ETC": 0,
+      "FONDS": 0,
+      "DERIVAT": 0,
+      "KRYPTO": 0
+    }
+  },
+  "results": [
+    {
+      "isin": "CA42328Y1025",
+      "wkn": "A2QEX9",
+      "longName": "Heliostar Metals Ltd Registered Shs",
+      "shortName": "Heliostar Metals",
+      "type": "AKTIE",
+      "tradableBusiness": true,
+      "weekendTrading": false,
+      "sparplan": true,
+      "fractional": true,
+      "isFeatured": false
+    },
+    {
+      "isin": "GB00BJVQC708",
+      "wkn": "A2PTUX",
+      "longName": "Helios Towers PLC Registered Shs",
+      "shortName": "Helios Towers",
+      "type": "AKTIE",
+      "tradableBusiness": true,
+      "weekendTrading": false,
+      "sparplan": true,
+      "fractional": true,
+      "isFeatured": false
+    },
+    {
+      "isin": "US42328H1095",
+      "wkn": "A2PMGD",
+      "longName": "Helios Technologies Inc Registered Shs",
+      "shortName": "Helios Technologies",
+      "type": "AKTIE",
+      "tradableBusiness": true,
+      "weekendTrading": false,
+      "sparplan": true,
+      "fractional": true,
+      "isFeatured": false
+    }
+  ]
+}

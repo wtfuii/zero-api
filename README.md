@@ -17,6 +17,7 @@ There is no official API. This library mimics the broker's private HTTP endpoint
 - **Email + password login over HTTP** — Cognito SRP through the broker's own `/apic/authc` proxy, no browser required.
 - **Automatic session handling** — logs in lazily on the first call, refreshes the IdToken from the refresh-token cookie, and re-authenticates once on `401`/`403`.
 - **Typed models everywhere** — every response is a Pydantic model with `extra="forbid"`, so broker schema drift fails loudly instead of silently corrupting data.
+- **Instrument search** — typeahead by name, WKN or ISIN, with per-asset-class hit counts.
 - **Full order flow** — `verify` precheck, ex-ante cost document (`/apic/exante`), placement, listing and cancellation.
 - **2FA order execution** — probes, lists enrolled devices, sends the app push, polls for approval, and unlocks the session (or auto-unlocks inside `place()`/`cancel()`).
 - **Tested offline** — the test suite runs against recorded, sanitized broker payloads. No live broker calls, ever.
@@ -152,6 +153,7 @@ print(f"Buying power: {account.buying_power} EUR")
 
 | Method | Returns | Description |
 |---|---|---|
+| `search(query, *, size=10)` | `InstrumentSearchPage` | Typeahead search by name, WKN or ISIN. `page.results` is capped by `size`; `page.stats.hits`/`total` count every match per asset class. |
 | `get(isin)` | `Instrument` | Master record: trading rules, venues, per-venue fees, quotes, sentiment. |
 | `detail(isin)` | `InstrumentDetail` | Market data and fundamentals: price, 52-week range, volume, profile, dividends. |
 | `chart(isin, period=ChartPeriod.ONE_YEAR)` | `list[ChartBar]` | Chart series for one period. Fetches `detail()` first to resolve the chart identifier. |
@@ -168,6 +170,16 @@ for venue in instrument.trading_venues:
 bars = client.instrument.chart("DE0007030009", ChartPeriod.ONE_MONTH)
 for bar in bars:
     print(bar.date, bar.close)
+```
+
+Search by name, WKN or ISIN before working with an instrument (`InstrumentType` is a `StrEnum` of `AKTIE`, `ETF_ETC`, `FONDS`, `DERIVAT`, `KRYPTO`):
+
+```python
+page = client.instrument.search("helios")
+for hit in page.results:
+    print(hit.isin, hit.wkn, hit.short_name, hit.type, hit.sparplan)
+
+print(page.stats.total, "matches in total")
 ```
 
 ### `client.portfolio`
@@ -351,7 +363,7 @@ src/zero_api/
 ├── core/              # shared HTTP transport + exceptions
 ├── auth/              # Cognito SRP login and refresh
 ├── account/           # cash account
-├── instrument/        # master data, details, charts
+├── instrument/        # search, master data, details, charts
 ├── portfolio/         # depot positions
 ├── watchlist/         # watchlist CRUD
 ├── ordering/          # orders: list, place, cancel
